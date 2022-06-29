@@ -126,6 +126,7 @@ def main(args):
 
     # add self loop. We add self loop for each graph here since the function "add_self_loop" does not
     # support batch graph.
+    print(dataset[0])
     for i in range(len(dataset)):
         dataset.graph_lists[i] = dgl.add_self_loop(dataset.graph_lists[i])
 
