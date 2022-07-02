@@ -145,8 +145,8 @@ def main(args):
 
     # Step 2: Create model =================================================================== #
     num_n_feature, num_e_feature, num_classes, _ = dataset.statistics()
-    print(dataset.statistics())
-    exit()
+    # print(dataset.statistics())
+    # exit()
     model = HGPSLModel(in_feat=num_n_feature, out_feat=num_classes, hid_feat=args.hid_dim,
                        conv_layers=args.conv_layers, dropout=args.dropout, pool_ratio=args.pool_ratio,
                        lamb=args.lamb, sample=args.sample).to(device)
