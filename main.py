@@ -92,7 +92,7 @@ def train(model: torch.nn.Module, optimizer, trainloader, device):
         batch_graphs, batch_labels = batch
         batch_graphs = batch_graphs.to(device)
         batch_labels = batch_labels.long().to(device)
-        out = model(batch_graphs, batch_graphs.ndata["feat"])
+        out = model(batch_graphs, n_feat = batch_graphs.ndata["features"], e_feat= batch_graphs.ndata["features"])
         loss = F.nll_loss(out, batch_labels)
         loss.backward()
         optimizer.step()
@@ -113,7 +113,7 @@ def test(model: torch.nn.Module, loader, device):
         num_graphs += batch_labels.size(0)
         batch_graphs = batch_graphs.to(device)
         batch_labels = batch_labels.long().to(device)
-        out = model(batch_graphs, batch_graphs.ndata["feat"])
+        out = model(batch_graphs, n_feat = batch_graphs.ndata["features"], e_feat = batch_graphs.edata["features"])
         pred = out.argmax(dim=1)
         loss += F.nll_loss(out, batch_labels, reduction="sum").item()
         correct += pred.eq(batch_labels).sum().item()
@@ -126,15 +126,15 @@ def main(args):
 
     # add self loop. We add self loop for each graph here since the function "add_self_loop" does not
     # support batch graph.
-    print(dataset[0])
-    for i in range(len(dataset)):
-        dataset.graph_lists[i] = dgl.add_self_loop(dataset.graph_lists[i])
+
+    #commenting self_loop code since already implemented during dataset creation
+    # for i in range(len(dataset)):
+    #     dataset.graph_lists[i] = dgl.add_self_loop(dataset.graph_lists[i])
 
     num_training = int(len(dataset) * 0.8)
     num_val = int(len(dataset) * 0.1)
     num_test = len(dataset) - num_val - num_training
     train_set, val_set, test_set = random_split(dataset, [num_training, num_val, num_test])
-
     train_loader = GraphDataLoader(train_set, batch_size=args.batch_size, shuffle=True, num_workers=6)
     val_loader = GraphDataLoader(val_set, batch_size=args.batch_size, num_workers=2)
     test_loader = GraphDataLoader(test_set, batch_size=args.batch_size, num_workers=2)
@@ -143,7 +143,8 @@ def main(args):
 
     # Step 2: Create model =================================================================== #
     num_feature, num_classes, _ = dataset.statistics()
-
+    print(dataset.statistics())
+    exit()
     model = HGPSLModel(in_feat=num_feature, out_feat=num_classes, hid_feat=args.hid_dim,
                        conv_layers=args.conv_layers, dropout=args.dropout, pool_ratio=args.pool_ratio,
                        lamb=args.lamb, sample=args.sample).to(device)

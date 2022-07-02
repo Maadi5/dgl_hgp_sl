@@ -62,9 +62,9 @@ class HGPSLModel(torch.nn.Module):
         self.lin2 = torch.nn.Linear(hid_feat, hid_feat // 2)
         self.lin3 = torch.nn.Linear(hid_feat // 2, self.out_feat)
 
-    def forward(self, graph, n_feat):
+    def forward(self, graph, n_feat, e_feat):
         final_readout = None
-        e_feat = None
+        # e_feat = None
 
         for i in range(self.num_layers):
             graph, n_feat, e_feat, readout = self.convpool_layers[i](graph, n_feat, e_feat)
