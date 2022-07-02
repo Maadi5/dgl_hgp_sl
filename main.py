@@ -3,7 +3,7 @@ import json
 import logging
 import os
 from time import time
-
+from odourdataset import OdourDataset
 import dgl
 import torch
 import torch.nn
@@ -14,6 +14,7 @@ from torch.utils.data import random_split
 
 from networks import HGPSLModel
 from utils import get_stats
+
 
 
 def parse_args():
@@ -123,6 +124,7 @@ def test(model: torch.nn.Module, loader, device):
 def main(args):
     # Step 1: Prepare graph data and retrieve train/validation/test index ============================= #
     dataset = LegacyTUDataset(args.dataset, raw_dir=args.dataset_path)
+    dataset= OdourDataset()
 
     # add self loop. We add self loop for each graph here since the function "add_self_loop" does not
     # support batch graph.
@@ -142,13 +144,13 @@ def main(args):
     device = torch.device(args.device)
 
     # Step 2: Create model =================================================================== #
-    num_feature, num_classes, _ = dataset.statistics()
+    num_n_feature, num_e_feature, num_classes, _ = dataset.statistics()
     print(dataset.statistics())
     exit()
-    model = HGPSLModel(in_feat=num_feature, out_feat=num_classes, hid_feat=args.hid_dim,
+    model = HGPSLModel(in_feat=num_n_feature, out_feat=num_classes, hid_feat=args.hid_dim,
                        conv_layers=args.conv_layers, dropout=args.dropout, pool_ratio=args.pool_ratio,
                        lamb=args.lamb, sample=args.sample).to(device)
-    args.num_feature = int(num_feature)
+    args.num_feature = int(num_n_feature)
     args.num_classes = int(num_classes)
 
     # Step 3: Create training components ===================================================== #
