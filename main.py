@@ -130,8 +130,8 @@ def main(args):
     # support batch graph.
 
     #commenting self_loop code since already implemented during dataset creation
-    # for i in range(len(dataset)):
-    #     dataset.graph_lists[i] = dgl.add_self_loop(dataset.graph_lists[i])
+    for i in range(len(dataset)):
+        dataset.graph_lists[i] = dgl.add_self_loop(dataset.graph_lists[i])
 
     num_training = int(len(dataset) * 0.8)
     num_val = int(len(dataset) * 0.1)
