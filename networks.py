@@ -62,22 +62,22 @@ class HGPSLModel(torch.nn.Module):
         self.lin2 = torch.nn.Linear(hid_feat, hid_feat // 2)
         self.lin3 = torch.nn.Linear(hid_feat // 2, self.out_feat)
 
-    def forward(self, graph, n_feat, e_feat):
+    def forward(self, graph, n_feats, e_feats):
         final_readout = None
         # e_feat = None
 
         for i in range(self.num_layers):
-            graph, n_feat, e_feat, readout = self.convpool_layers[i](graph, n_feat, e_feat)
-            print(n_feat.shape)
+            graph, n_feats, e_feats, readout = self.convpool_layers[i](graph, n_feats, e_feats)
+            print(n_feats.shape)
             if final_readout is None:
                 final_readout = readout
             else:
                 final_readout = final_readout + readout
 
-        n_feat = F.relu(self.lin1(final_readout))
-        n_feat = F.dropout(n_feat, p=self.dropout, training=self.training)
-        n_feat = F.relu(self.lin2(n_feat))
-        n_feat = F.dropout(n_feat, p=self.dropout, training=self.training)
-        n_feat = self.lin3(n_feat)
+        n_feats = F.relu(self.lin1(final_readout))
+        n_feats = F.dropout(n_feats, p=self.dropout, training=self.training)
+        n_feats = F.relu(self.lin2(n_feats))
+        n_feats = F.dropout(n_feats, p=self.dropout, training=self.training)
+        n_feats = self.lin3(n_feats)
 
-        return F.log_softmax(n_feat, dim=-1)
+        return F.log_softmax(n_feats, dim=-1)
