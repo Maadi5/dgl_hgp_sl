@@ -114,7 +114,8 @@ def test(model: torch.nn.Module, loader, device):
         num_graphs += batch_labels.size(0)
         batch_graphs = batch_graphs.to(device)
         batch_labels = batch_labels.long().to(device)
-        out = model(batch_graphs, n_feat = batch_graphs.ndata["feat"], e_feat = None)   #change for dgl
+        #out = model(batch_graphs, n_feat = batch_graphs.ndata["feat"], e_feat = None)   #change for dgl
+        out = model(batch_graphs, n_feat=batch_graphs.ndata["features"], e_feat=batch_graphs.edata["features"])
         pred = out.argmax(dim=1)
         loss += F.nll_loss(out, batch_labels, reduction="sum").item()
         correct += pred.eq(batch_labels).sum().item()
@@ -123,15 +124,15 @@ def test(model: torch.nn.Module, loader, device):
 
 def main(args):
     # Step 1: Prepare graph data and retrieve train/validation/test index ============================= #
-    dataset = LegacyTUDataset(args.dataset, raw_dir=args.dataset_path)
-    #dataset= OdourDataset()
+    #dataset = LegacyTUDataset(args.dataset, raw_dir=args.dataset_path)
+    dataset= OdourDataset()
 
     # add self loop. We add self loop for each graph here since the function "add_self_loop" does not
     # support batch graph.
 
     #commenting self_loop code since already implemented during dataset creation
-    for i in range(len(dataset)):
-        dataset.graph_lists[i] = dgl.add_self_loop(dataset.graph_lists[i])
+    # for i in range(len(dataset)):
+    #     dataset.graph_lists[i] = dgl.add_self_loop(dataset.graph_lists[i])
 
     num_training = int(len(dataset) * 0.8)
     num_val = int(len(dataset) * 0.1)
@@ -144,7 +145,9 @@ def main(args):
     device = torch.device(args.device)
 
     # Step 2: Create model =================================================================== #
-    num_n_feature, num_classes, _ = dataset.statistics() #get edge classes in dgl dataset
+    #num_n_feature, num_classes, _ = dataset.statistics() #get edge classes in dgl dataset
+    num_n_feature, num_e_features, num_classes, _ = dataset.statistics()
+
     # print(dataset.statistics())
     # exit()
     model = HGPSLModel(in_feat=num_n_feature, out_feat=num_classes, hid_feat=args.hid_dim,
