@@ -44,6 +44,7 @@ class WeightedGraphConv(GraphConv):
             n_feat = n_feat * src_norm
             graph.ndata["h"] = n_feat
             graph.edata["e"] = e_feat
+            print(graph.ndata["h"].shape, graph.edata["e"].shape)
             graph.update_all(fn.src_mul_edge("h", "e", "m"),
                              fn.sum("m", "h"))
             n_feat = graph.ndata.pop("h")
