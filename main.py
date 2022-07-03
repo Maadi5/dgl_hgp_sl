@@ -93,7 +93,7 @@ def train(model: torch.nn.Module, optimizer, trainloader, device):
         batch_graphs, batch_labels = batch
         batch_graphs = batch_graphs.to(device)
         batch_labels = batch_labels.long().to(device)
-        out = model(batch_graphs, n_feat = batch_graphs.ndata["features"], e_feat= batch_graphs.ndata["features"])
+        out = model(batch_graphs, n_feat = batch_graphs.ndata["feat"], e_feat= None) ##change for dgl
         loss = F.nll_loss(out, batch_labels)
         loss.backward()
         optimizer.step()
@@ -114,7 +114,7 @@ def test(model: torch.nn.Module, loader, device):
         num_graphs += batch_labels.size(0)
         batch_graphs = batch_graphs.to(device)
         batch_labels = batch_labels.long().to(device)
-        out = model(batch_graphs, n_feat = batch_graphs.ndata["features"], e_feat = batch_graphs.edata["features"])
+        out = model(batch_graphs, n_feat = batch_graphs.ndata["feat"], e_feat = None)   #change for dgl
         pred = out.argmax(dim=1)
         loss += F.nll_loss(out, batch_labels, reduction="sum").item()
         correct += pred.eq(batch_labels).sum().item()
@@ -123,8 +123,8 @@ def test(model: torch.nn.Module, loader, device):
 
 def main(args):
     # Step 1: Prepare graph data and retrieve train/validation/test index ============================= #
-    #dataset = LegacyTUDataset(args.dataset, raw_dir=args.dataset_path)
-    dataset= OdourDataset()
+    dataset = LegacyTUDataset(args.dataset, raw_dir=args.dataset_path)
+    #dataset= OdourDataset()
 
     # add self loop. We add self loop for each graph here since the function "add_self_loop" does not
     # support batch graph.
@@ -144,7 +144,7 @@ def main(args):
     device = torch.device(args.device)
 
     # Step 2: Create model =================================================================== #
-    num_n_feature, num_e_feature, num_classes, _ = dataset.statistics()
+    num_n_feature, num_classes, _ = dataset.statistics() #get edge classes in dgl dataset
     # print(dataset.statistics())
     # exit()
     model = HGPSLModel(in_feat=num_n_feature, out_feat=num_classes, hid_feat=args.hid_dim,
