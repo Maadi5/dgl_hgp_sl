@@ -36,22 +36,20 @@ class WeightedGraphConv(GraphConv):
         print(n_feat.shape, 'hi da')
 
         with graph.local_scope():
+            if self.weight is not None:
+                n_feat = torch.matmul(n_feat, self.weight)
+                print(n_feat.shape, 'hi2')
             src_norm = torch.pow(graph.out_degrees().float().clamp(min=1), -0.5)
             src_norm = src_norm.view(-1, 1)
             dst_norm = torch.pow(graph.in_degrees().float().clamp(min=1), -0.5)
             dst_norm = dst_norm.view(-1, 1)
             n_feat = n_feat * src_norm
-            print(src_norm, 'src hi')
             print(n_feat.shape, 'hi3')
             graph.ndata["h"] = n_feat
             graph.edata["e"] = e_feat
             print(graph.ndata["h"].shape, graph.edata["e"].shape)
             graph.update_all(fn.src_mul_edge("h", "e", "m"),
                              fn.sum("m", "h"))
-            if self.weight is not None:
-                n_feat = torch.matmul(n_feat, self.weight)
-                print(n_feat.shape, 'hi2')
-
             n_feat = graph.ndata.pop("h")
             n_feat = n_feat * dst_norm
             if self.bias is not None:
