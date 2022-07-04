@@ -33,7 +33,7 @@ class WeightedGraphConv(GraphConv):
     def forward(self, graph: DGLGraph, n_feat, e_feat=None):
         if e_feat is None:
             return super(WeightedGraphConv, self).forward(graph, n_feat)
-
+        print(n_feat.shape, 'hi da')
         with graph.local_scope():
             if self.weight is not None:
                 n_feat = torch.matmul(n_feat, self.weight)
