@@ -94,7 +94,7 @@ def train(model: torch.nn.Module, optimizer, trainloader, device):
         batch_graphs = batch_graphs.to(device)
         batch_labels = batch_labels.long().to(device)
         #out = model(batch_graphs, n_feat = batch_graphs.ndata["feat"], e_feat = None)   #change for dgl
-        out = model(batch_graphs, n_feats=batch_graphs.ndata["features"], e_feats=batch_graphs.edata["features"])
+        out = model(batch_graphs, n_feat=batch_graphs.ndata["features"], e_feat=batch_graphs.edata["features"])
         loss = F.nll_loss(out, batch_labels)
         loss.backward()
         optimizer.step()
