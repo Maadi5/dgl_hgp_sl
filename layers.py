@@ -33,21 +33,22 @@ class WeightedGraphConv(GraphConv):
     def forward(self, graph: DGLGraph, n_feat, e_feat=None):
         if e_feat is None:
             return super(WeightedGraphConv, self).forward(graph, n_feat)
-        print(n_feat.shape, 'hi da')
+        #print(n_feat.shape, 'hi da')
 
         with graph.local_scope():
             if self.weight is not None:
                 n_feat = torch.matmul(n_feat, self.weight)
-                print(n_feat.shape, 'hi2')
+                e_feat = torch.matmul(e_feat, self.weight)
+
             src_norm = torch.pow(graph.out_degrees().float().clamp(min=1), -0.5)
             src_norm = src_norm.view(-1, 1)
             dst_norm = torch.pow(graph.in_degrees().float().clamp(min=1), -0.5)
             dst_norm = dst_norm.view(-1, 1)
             n_feat = n_feat * src_norm
-            print(n_feat.shape, 'hi3')
+            #print(n_feat.shape, 'hi3')
             graph.ndata["h"] = n_feat
             graph.edata["e"] = e_feat
-            print(graph.ndata["h"].shape, graph.edata["e"].shape)
+            #print(graph.ndata["h"].shape, graph.edata["e"].shape)
             graph.update_all(fn.src_mul_edge("h", "e", "m"),
                              fn.sum("m", "h"))
             n_feat = graph.ndata.pop("h")
