@@ -76,7 +76,7 @@ class HGPSLModel(torch.nn.Module):
 
         n_feat = F.relu(self.lin1(final_readout))
         n_feat = F.dropout(n_feat, p=self.dropout, training=self.training)
-        n_feat = F.relu(self.lin2(n_feats))
+        n_feat = F.relu(self.lin2(n_feat))
         n_feat = F.dropout(n_feat, p=self.dropout, training=self.training)
         n_feat = self.lin3(n_feat)
 
