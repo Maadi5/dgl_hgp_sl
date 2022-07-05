@@ -68,7 +68,7 @@ class HGPSLModel(torch.nn.Module):
 
         for i in range(self.num_layers):
             graph, n_feat, e_feat, readout = self.convpool_layers[i](graph, n_feat, e_feat)
-            print(n_feat.shape)
+            #print(n_feat.shape)
             if final_readout is None:
                 final_readout = readout
             else:
