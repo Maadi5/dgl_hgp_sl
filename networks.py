@@ -62,7 +62,7 @@ class HGPSLModel(torch.nn.Module):
         self.lin2 = torch.nn.Linear(hid_feat, hid_feat // 2)
         self.lin3 = torch.nn.Linear(hid_feat // 2, self.out_feat)
 
-    def forward(self, graph, n_feat, e_feat):
+    def forward(self, graph, n_feat, e_feat=None):
         final_readout = None
         # e_feat = None
 
