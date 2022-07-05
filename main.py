@@ -116,7 +116,7 @@ def test(model: torch.nn.Module, loader, device):
         batch_graphs = batch_graphs.to(device)
         batch_labels = batch_labels.long().to(device)
         #out = model(batch_graphs, n_feat = batch_graphs.ndata["feat"], e_feat = None)   #change for dgl
-        out = model(batch_graphs, n_feat=batch_graphs.ndata["features"], e_feat=batch_graphs.edata["features"])
+        out = model(batch_graphs, n_feat=batch_graphs.ndata["features"])
         pred = out.argmax(dim=1)
         loss += F.nll_loss(out, batch_labels, reduction="sum").item()
         correct += pred.eq(batch_labels).sum().item()
