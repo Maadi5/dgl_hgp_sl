@@ -153,18 +153,21 @@ class OdourDataset(DGLDataset):
                 bond_features.append(bond_featurizer.encode(bond))
 
         if global_node == True:
+
+            # Create and add global node features and global bond feature
+            global_node_feat = np.mean(np.array(atom_features), axis=0)
+            atom_features.append(global_node_feat)
+            global_bond_feat = np.mean(np.array(bond_features), axis=0)
+
             # Global node connections
             for ix in range(max_id + 1):
                 pair_indices.append([max_id + 1, ix])
-                bond_features.append(bond_featurizer.encode(None))  # Should this be None of something else?
+                bond_features.append(global_bond_feat)  # Should this be None of something else?
 
             # Global node self connection
             pair_indices.append([max_id + 1, max_id + 1])
             bond_features.append(bond_featurizer.encode(None))  # Should this be None of something else?
 
-            # Create and add global node features
-            global_node_feat = np.mean(np.array(atom_features), axis=0)
-            atom_features.append(global_node_feat)
             num_nodes = max_id + 2
         else:
             num_nodes = max_id + 1
@@ -235,7 +238,7 @@ class OdourDataset(DGLDataset):
             if row['SMILES'] != '':
                 mol = self.molecule_from_smiles(row['SMILES'])
                 label = row['Label']
-                atom_features, bond_features, pair_indices, num_nodes = self.graph_from_molecule(mol, global_node=False)
+                atom_features, bond_features, pair_indices, num_nodes = self.graph_from_molecule(mol, global_node=True)
                 g = self.create_dgl_graph(pair_indices, num_nodes=num_nodes)
                 g.ndata['features'] = torch.from_numpy(np.array(atom_features, dtype=np.float32))
                 g.edata['features'] = torch.from_numpy(np.array(bond_features, dtype=np.float32))
