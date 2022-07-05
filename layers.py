@@ -38,7 +38,7 @@ class WeightedGraphConv(GraphConv):
         with graph.local_scope():
             if self.weight is not None:
                 n_feat = torch.matmul(n_feat, self.weight)
-                e_feat = torch.matmul(e_feat, self.weight)
+                #e_feat = torch.matmul(e_feat, self.weight)
 
             src_norm = torch.pow(graph.out_degrees().float().clamp(min=1), -0.5)
             src_norm = src_norm.view(-1, 1)
