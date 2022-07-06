@@ -21,6 +21,7 @@ from dgl.nn.pytorch import GraphConv
 
 
 
+
 class Featurizer:
     def __init__(self, allowable_sets):
         self.dim = 0
@@ -93,6 +94,124 @@ bond_featurizer = BondFeaturizer(
 )
 
 
+def molecule_from_smiles(self, smiles):
+    # MolFromSmiles(m, sanitize=True) should be equivalent to
+    # MolFromSmiles(m, sanitize=False) -> SanitizeMol(m) -> AssignStereochemistry(m, ...)
+    molecule = Chem.MolFromSmiles(smiles, sanitize=False)
+
+    # If sanitization is unsuccessful, catch the error, and try again without
+    # the sanitization step that caused the error
+    # print(smiles)
+    try:
+        flag = Chem.SanitizeMol(molecule, catchErrors=True)
+        if flag != Chem.SanitizeFlags.SANITIZE_NONE:
+            Chem.SanitizeMol(molecule, sanitizeOps=Chem.SanitizeFlags.SANITIZE_ALL ^ flag)
+            Chem.AssignStereochemistry(molecule, cleanIt=True, force=True)
+    except:
+        Chem.AssignStereochemistry(molecule, cleanIt=True, force=True)
+    # Chem.AssignStereochemistry(molecule, cleanIt=True, force=True)
+    return molecule
+
+
+def graph_from_molecule(self, molecule, global_node=False):
+    # Initialize graph
+    atom_features = []
+    bond_features = []
+    pair_indices = []
+    max_id = 0
+    for atom in molecule.GetAtoms():
+        atom_features.append(atom_featurizer.encode(atom))
+        # print('feat: ', atom_featurizer.encode(atom).shape, type(atom_featurizer.encode(atom)))
+
+        # Add self-loops
+        max_id = max(atom.GetIdx(), max_id)
+        pair_indices.append([atom.GetIdx(), atom.GetIdx()])
+        bond_features.append(bond_featurizer.encode(None))
+
+        for neighbor in atom.GetNeighbors():
+            bond = molecule.GetBondBetweenAtoms(atom.GetIdx(), neighbor.GetIdx())
+            pair_indices.append([atom.GetIdx(), neighbor.GetIdx()])
+            bond_features.append(bond_featurizer.encode(bond))
+
+    if global_node == True:
+
+        # Create and add global node features and global bond feature
+        global_node_feat = np.mean(np.array(atom_features), axis=0)
+        atom_features.append(global_node_feat)
+        global_bond_feat = np.mean(np.array(bond_features), axis=0)
+
+        # Global node connections
+        for ix in range(max_id + 1):
+            pair_indices.append([max_id + 1, ix])
+            bond_features.append(global_bond_feat)  # Should this be None of something else?
+
+        # Global node self connection
+        pair_indices.append([max_id + 1, max_id + 1])
+        bond_features.append(bond_featurizer.encode(None))  # Should this be None of something else?
+
+        num_nodes = max_id + 2
+    else:
+        num_nodes = max_id + 1
+
+    return np.array(atom_features), np.array(bond_features), np.array(pair_indices), num_nodes
+
+
+def create_dgl_graph(self, edges, num_nodes):
+    srcs = []
+    dsts = []
+    for i in edges:
+        src, dst = i
+        srcs.append(src)
+        dsts.append(dst)
+    return dgl.graph((srcs, dsts), num_nodes=num_nodes)
+
+
+def dgl_graph_from_molecule(self, molecule, global_node=False): #need to update global node
+    # Initialize graph
+    atom_features = []
+    bond_features = []
+    pair_indices = []
+    max_id = 0
+    for atom in molecule.GetAtoms():
+        atom_features.append(atom_featurizer.encode(atom))
+        # print('feat: ', atom_featurizer.encode(atom), type(atom_featurizer.encode(atom)))
+
+        # Add self-loops
+        max_id = max(atom.GetIdx(), max_id)
+        pair_indices.append([atom.GetIdx(), atom.GetIdx()])
+        bond_features.append(bond_featurizer.encode(None))
+
+        for neighbor in atom.GetNeighbors():
+            bond = molecule.GetBondBetweenAtoms(atom.GetIdx(), neighbor.GetIdx())
+            pair_indices.append([atom.GetIdx(), neighbor.GetIdx()])
+            bond_features.append(bond_featurizer.encode(bond))
+
+    if global_node == True:
+        # Global node connections
+        for ix in range(max_id + 1):
+            pair_indices.append([max_id + 1, ix])
+            bond_features.append(bond_featurizer.encode(None))  # Should this be None of something else?
+
+        # Global node self connection
+        pair_indices.append([max_id + 1, max_id + 1])
+        bond_features.append(bond_featurizer.encode(None))  # Should this be None of something else?
+
+        # Create and add global node features
+        global_node_feat = np.mean(np.array(atom_features), axis=0)
+        atom_features.append(global_node_feat)
+
+        graph = self.create_dgl_graph(pair_indices, num_nodes=max_id + 2)
+        graph.ndata['features'] = torch.tensor(np.array(atom_features))
+        graph.edata['features'] = torch.tensor(np.array(bond_features))
+
+    else:
+        graph = self.create_dgl_graph(pair_indices, num_nodes=max_id + 1)
+        graph.ndata['features'] = torch.from_numpy(np.array(atom_features, dtype=np.float32))
+        graph.edata['features'] = torch.from_numpy(np.array(bond_features, dtype=np.float32))
+
+    return graph
+
+
 class OdourDataset(DGLDataset):
     def __init__(self):
         super(OdourDataset, self).__init__(name='odour_dataset')
@@ -115,119 +234,6 @@ class OdourDataset(DGLDataset):
             }
         )
 
-    def molecule_from_smiles(self, smiles):
-        # MolFromSmiles(m, sanitize=True) should be equivalent to
-        # MolFromSmiles(m, sanitize=False) -> SanitizeMol(m) -> AssignStereochemistry(m, ...)
-        molecule = Chem.MolFromSmiles(smiles, sanitize=False)
-
-        # If sanitization is unsuccessful, catch the error, and try again without
-        # the sanitization step that caused the error
-        # print(smiles)
-        try:
-            flag = Chem.SanitizeMol(molecule, catchErrors=True)
-            if flag != Chem.SanitizeFlags.SANITIZE_NONE:
-                Chem.SanitizeMol(molecule, sanitizeOps=Chem.SanitizeFlags.SANITIZE_ALL ^ flag)
-                Chem.AssignStereochemistry(molecule, cleanIt=True, force=True)
-        except:
-            Chem.AssignStereochemistry(molecule, cleanIt=True, force=True)
-        # Chem.AssignStereochemistry(molecule, cleanIt=True, force=True)
-        return molecule
-
-    def graph_from_molecule(self, molecule, global_node=False):
-        # Initialize graph
-        atom_features = []
-        bond_features = []
-        pair_indices = []
-        max_id = 0
-        for atom in molecule.GetAtoms():
-            atom_features.append(atom_featurizer.encode(atom))
-            # print('feat: ', atom_featurizer.encode(atom).shape, type(atom_featurizer.encode(atom)))
-
-            # Add self-loops
-            max_id = max(atom.GetIdx(), max_id)
-            pair_indices.append([atom.GetIdx(), atom.GetIdx()])
-            bond_features.append(bond_featurizer.encode(None))
-
-            for neighbor in atom.GetNeighbors():
-                bond = molecule.GetBondBetweenAtoms(atom.GetIdx(), neighbor.GetIdx())
-                pair_indices.append([atom.GetIdx(), neighbor.GetIdx()])
-                bond_features.append(bond_featurizer.encode(bond))
-
-        if global_node == True:
-
-            # Create and add global node features and global bond feature
-            global_node_feat = np.mean(np.array(atom_features), axis=0)
-            atom_features.append(global_node_feat)
-            global_bond_feat = np.mean(np.array(bond_features), axis=0)
-
-            # Global node connections
-            for ix in range(max_id + 1):
-                pair_indices.append([max_id + 1, ix])
-                bond_features.append(global_bond_feat)  # Should this be None of something else?
-
-            # Global node self connection
-            pair_indices.append([max_id + 1, max_id + 1])
-            bond_features.append(bond_featurizer.encode(None))  # Should this be None of something else?
-
-            num_nodes = max_id + 2
-        else:
-            num_nodes = max_id + 1
-
-        return np.array(atom_features), np.array(bond_features), np.array(pair_indices), num_nodes
-
-    def create_dgl_graph(self, edges, num_nodes):
-        srcs = []
-        dsts = []
-        for i in edges:
-            src, dst = i
-            srcs.append(src)
-            dsts.append(dst)
-        return dgl.graph((srcs, dsts), num_nodes=num_nodes)
-
-    def dgl_graph_from_molecule(self, molecule, global_node=False):
-        # Initialize graph
-        atom_features = []
-        bond_features = []
-        pair_indices = []
-        max_id = 0
-        for atom in molecule.GetAtoms():
-            atom_features.append(atom_featurizer.encode(atom))
-            # print('feat: ', atom_featurizer.encode(atom), type(atom_featurizer.encode(atom)))
-
-            # Add self-loops
-            max_id = max(atom.GetIdx(), max_id)
-            pair_indices.append([atom.GetIdx(), atom.GetIdx()])
-            bond_features.append(bond_featurizer.encode(None))
-
-            for neighbor in atom.GetNeighbors():
-                bond = molecule.GetBondBetweenAtoms(atom.GetIdx(), neighbor.GetIdx())
-                pair_indices.append([atom.GetIdx(), neighbor.GetIdx()])
-                bond_features.append(bond_featurizer.encode(bond))
-
-        if global_node == True:
-            # Global node connections
-            for ix in range(max_id + 1):
-                pair_indices.append([max_id + 1, ix])
-                bond_features.append(bond_featurizer.encode(None))  # Should this be None of something else?
-
-            # Global node self connection
-            pair_indices.append([max_id + 1, max_id + 1])
-            bond_features.append(bond_featurizer.encode(None))  # Should this be None of something else?
-
-            # Create and add global node features
-            global_node_feat = np.mean(np.array(atom_features), axis=0)
-            atom_features.append(global_node_feat)
-
-            self.graph = self.create_dgl_graph(pair_indices, num_nodes=max_id + 2)
-            self.graph.ndata['features'] = torch.tensor(np.array(atom_features))
-            self.graph.edata['features'] = torch.tensor(np.array(bond_features))
-
-        else:
-            self.graph = self.create_dgl_graph(pair_indices, num_nodes=max_id + 1)
-            self.graph.ndata['features'] = torch.from_numpy(np.array(atom_features, dtype=np.float32))
-            self.graph.edata['features'] = torch.from_numpy(np.array(bond_features, dtype=np.float32))
-
-        return self.graph
 
     def process(self):
         savepath = '/content/drive/MyDrive/dgl_hgp_sl/dataset/'
@@ -237,10 +243,10 @@ class OdourDataset(DGLDataset):
         self.labels_set = set()
         for idx, row in df.iterrows():
             if row['SMILES'] != '':
-                mol = self.molecule_from_smiles(row['SMILES'])
+                mol = molecule_from_smiles(row['SMILES'])
                 label = row['Label']
-                atom_features, bond_features, pair_indices, num_nodes = self.graph_from_molecule(mol, global_node=False)
-                g = self.create_dgl_graph(pair_indices, num_nodes=num_nodes)
+                atom_features, bond_features, pair_indices, num_nodes = graph_from_molecule(mol, global_node=False)
+                g = create_dgl_graph(pair_indices, num_nodes=num_nodes)
                 g.ndata['features'] = torch.from_numpy(np.array(atom_features, dtype=np.float32))
                 g.edata['features'] = torch.from_numpy(np.array(bond_features, dtype=np.float32))
                 self.num_atom_feat = atom_features.shape[1]
