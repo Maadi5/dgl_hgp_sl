@@ -84,7 +84,7 @@ bond_featurizer = BondFeaturizer(
 )
 
 
-def molecule_from_smiles(self, smiles):
+def molecule_from_smiles(smiles):
     # MolFromSmiles(m, sanitize=True) should be equivalent to
     # MolFromSmiles(m, sanitize=False) -> SanitizeMol(m) -> AssignStereochemistry(m, ...)
     molecule = Chem.MolFromSmiles(smiles, sanitize=False)
@@ -103,7 +103,7 @@ def molecule_from_smiles(self, smiles):
     return molecule
 
 
-def graph_from_molecule(self, molecule, global_node=False):
+def graph_from_molecule(molecule, global_node=False):
     # Initialize graph
     atom_features = []
     bond_features = []
@@ -146,7 +146,7 @@ def graph_from_molecule(self, molecule, global_node=False):
     return np.array(atom_features), np.array(bond_features), np.array(pair_indices), num_nodes
 
 
-def create_dgl_graph(self, edges, num_nodes):
+def create_dgl_graph(edges, num_nodes):
     srcs = []
     dsts = []
     for i in edges:
@@ -156,7 +156,7 @@ def create_dgl_graph(self, edges, num_nodes):
     return dgl.graph((srcs, dsts), num_nodes=num_nodes)
 
 
-def dgl_graph_from_molecule(self, molecule, global_node=False): #need to update global node
+def dgl_graph_from_molecule(molecule, global_node=False): #need to update global node
     # Initialize graph
     atom_features = []
     bond_features = []
@@ -258,7 +258,7 @@ graphs = []
 execptions = []
 for mol in lista_mols:
     print(mol)
-    molecule = molecule_from_smiles(mol)
+    molecule = molecule_from_smiles(smiles= mol)
     _, bond_features, _, _ = graph_from_molecule(molecule, global_node=False)
     g_mol = smiles2graph(mol)
 
