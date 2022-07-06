@@ -20,6 +20,7 @@ import torch.nn.functional as F
 from dgl.nn.pytorch import GraphConv
 
 
+
 class Featurizer:
     def __init__(self, allowable_sets):
         self.dim = 0
