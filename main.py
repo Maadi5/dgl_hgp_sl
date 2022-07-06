@@ -149,8 +149,8 @@ def main(args):
 
     # Step 2: Create model =================================================================== #
     #num_n_feature, num_classes, _ = dataset.statistics() #get edge classes in dgl dataset
-    num_n_feature, num_e_features, num_classes, _ = dataset.statistics()
-
+    num_n_feature, num_e_features, num_classes, num_graphs = dataset.statistics()
+    print('num graphs: ', num_graphs)
     # print(dataset.statistics())
     # exit()
     model = HGPSLModel(in_feat=num_n_feature, out_feat=num_classes, hid_feat=args.hid_dim,
