@@ -77,7 +77,7 @@ class BondFeaturizer(Featurizer):
 
 atom_featurizer = AtomFeaturizer(
     allowable_sets={
-        "symbol": {"B", "Br", "C", "Ca", "Cl", "F", "H", "I", "N", "Na", "O", "P", "S"},
+        "symbol": {'Br', 'C', 'Cl', 'F', 'I', 'N', 'Na', 'O', 'P', 'S', 'Zn'},
         "n_valence": {0, 1, 2, 3, 4, 5, 6},
         "n_hydrogens": {0, 1, 2, 3, 4},
         "hybridization": {"s", "sp", "sp2", "sp3"},
@@ -238,7 +238,7 @@ class OdourDataset(DGLDataset):
             if row['SMILES'] != '':
                 mol = self.molecule_from_smiles(row['SMILES'])
                 label = row['Label']
-                atom_features, bond_features, pair_indices, num_nodes = self.graph_from_molecule(mol, global_node=True)
+                atom_features, bond_features, pair_indices, num_nodes = self.graph_from_molecule(mol, global_node=False)
                 g = self.create_dgl_graph(pair_indices, num_nodes=num_nodes)
                 g.ndata['features'] = torch.from_numpy(np.array(atom_features, dtype=np.float32))
                 g.edata['features'] = torch.from_numpy(np.array(bond_features, dtype=np.float32))
