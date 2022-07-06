@@ -257,7 +257,7 @@ j = 0
 graphs = []
 execptions = []
 for mol in lista_mols:
-    print(mol)
+    #print(mol)
     molecule = molecule_from_smiles(smiles= mol)
     _, bond_features, _, _ = graph_from_molecule(molecule, global_node=False)
     g_mol = smiles2graph(mol)
