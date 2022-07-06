@@ -72,7 +72,7 @@ for mol in lista_mols:
     g_mol = smiles2graph(mol)
 
     try:
-        g_mol.ndata['feat'] = torch.tensor(feat_vec(mol))
+        g_mol.ndata['features'] = torch.tensor(feat_vec(mol))
     except:
         execptions.append(j)
 
@@ -90,7 +90,7 @@ i=0
 for grap in graphs:
 
   try:
-    grap.ndata['feat']
+    grap.ndata['features']
   except:
     print(i)
   i+=1
