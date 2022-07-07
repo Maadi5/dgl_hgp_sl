@@ -190,12 +190,12 @@ def dgl_graph_from_molecule(molecule, global_node=False): #need to update global
         global_node_feat = np.mean(np.array(atom_features), axis=0)
         atom_features.append(global_node_feat)
 
-        graph = self.create_dgl_graph(pair_indices, num_nodes=max_id + 2)
+        graph = create_dgl_graph(pair_indices, num_nodes=max_id + 2)
         graph.ndata['features'] = torch.tensor(np.array(atom_features))
         graph.edata['features'] = torch.tensor(np.array(bond_features))
 
     else:
-        graph = self.create_dgl_graph(pair_indices, num_nodes=max_id + 1)
+        graph = create_dgl_graph(pair_indices, num_nodes=max_id + 1)
         graph.ndata['features'] = torch.from_numpy(np.array(atom_features, dtype=np.float32))
         graph.edata['features'] = torch.from_numpy(np.array(bond_features, dtype=np.float32))
 

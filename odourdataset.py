@@ -12,6 +12,8 @@ import torch
 import matplotlib.pyplot as plt
 import warnings
 from rdkit import Chem
+from ogb.utils.features import (allowable_features, atom_to_feature_vector,
+ bond_to_feature_vector, atom_feature_vector_to_dict, bond_feature_vector_to_dict)
 from rdkit import RDLogger
 from rdkit.Chem.Draw import IPythonConsole
 from rdkit.Chem.Draw import MolsToGridImage
@@ -20,7 +22,44 @@ import torch.nn.functional as F
 from dgl.nn.pytorch import GraphConv
 
 
+def smiles2graph(smiles_string):
+    """
+    Converts SMILES string to graph Data object
+    :input: SMILES string (str)
+    :return: graph object
+    """
 
+    mol = Chem.MolFromSmiles(smiles_string)
+
+    A = Chem.GetAdjacencyMatrix(mol)
+    A = np.asmatrix(A)
+    nnodes=len(A)
+    nz = np.nonzero(A)
+    edge_list=[]
+    src=[]
+    dst=[]
+
+    for i in range(nz[0].shape[0]):
+      src.append(nz[0][i])
+      dst.append(nz[1][i])
+
+    u, v = src, dst
+    g = dgl.graph((u, v))
+    bg=dgl.to_bidirected(g)
+
+    return bg
+
+def feat_vec(smiles_string):
+    """
+    Returns atom features for a molecule given a smiles string
+    """
+    # atoms
+    mol = Chem.MolFromSmiles(smiles_string)
+    atom_features_list = []
+    for atom in mol.GetAtoms():
+        atom_features_list.append(atom_to_feature_vector(atom))
+    x = np.array(atom_features_list, dtype = np.int64)
+    return x
 
 class Featurizer:
     def __init__(self, allowable_sets):
@@ -94,7 +133,7 @@ bond_featurizer = BondFeaturizer(
 )
 
 
-def molecule_from_smiles(self, smiles):
+def molecule_from_smiles(smiles):
     # MolFromSmiles(m, sanitize=True) should be equivalent to
     # MolFromSmiles(m, sanitize=False) -> SanitizeMol(m) -> AssignStereochemistry(m, ...)
     molecule = Chem.MolFromSmiles(smiles, sanitize=False)
@@ -113,7 +152,7 @@ def molecule_from_smiles(self, smiles):
     return molecule
 
 
-def graph_from_molecule(self, molecule, global_node=False):
+def graph_from_molecule(molecule, global_node=False):
     # Initialize graph
     atom_features = []
     bond_features = []
@@ -156,7 +195,7 @@ def graph_from_molecule(self, molecule, global_node=False):
     return np.array(atom_features), np.array(bond_features), np.array(pair_indices), num_nodes
 
 
-def create_dgl_graph(self, edges, num_nodes):
+def create_dgl_graph( edges, num_nodes):
     srcs = []
     dsts = []
     for i in edges:
@@ -166,7 +205,7 @@ def create_dgl_graph(self, edges, num_nodes):
     return dgl.graph((srcs, dsts), num_nodes=num_nodes)
 
 
-def dgl_graph_from_molecule(self, molecule, global_node=False): #need to update global node
+def dgl_graph_from_molecule( molecule, global_node=False): #need to update global node
     # Initialize graph
     atom_features = []
     bond_features = []
@@ -200,12 +239,12 @@ def dgl_graph_from_molecule(self, molecule, global_node=False): #need to update 
         global_node_feat = np.mean(np.array(atom_features), axis=0)
         atom_features.append(global_node_feat)
 
-        graph = self.create_dgl_graph(pair_indices, num_nodes=max_id + 2)
+        graph = create_dgl_graph(pair_indices, num_nodes=max_id + 2)
         graph.ndata['features'] = torch.tensor(np.array(atom_features))
         graph.edata['features'] = torch.tensor(np.array(bond_features))
 
     else:
-        graph = self.create_dgl_graph(pair_indices, num_nodes=max_id + 1)
+        graph = create_dgl_graph(pair_indices, num_nodes=max_id + 1)
         graph.ndata['features'] = torch.from_numpy(np.array(atom_features, dtype=np.float32))
         graph.edata['features'] = torch.from_numpy(np.array(bond_features, dtype=np.float32))
 
@@ -243,14 +282,17 @@ class OdourDataset(DGLDataset):
         self.labels_set = set()
         for idx, row in df.iterrows():
             if row['SMILES'] != '':
-                mol = molecule_from_smiles(row['SMILES'])
+
+                # mol = molecule_from_smiles(row['SMILES'])
                 label = row['Label']
-                atom_features, bond_features, pair_indices, num_nodes = graph_from_molecule(mol, global_node=False)
-                g = create_dgl_graph(pair_indices, num_nodes=num_nodes)
-                g.ndata['features'] = torch.from_numpy(np.array(atom_features, dtype=np.float32))
-                g.edata['features'] = torch.from_numpy(np.array(bond_features, dtype=np.float32))
-                self.num_atom_feat = atom_features.shape[1]
-                self.num_bond_feat = bond_features.shape[1]
+                # atom_features, bond_features, pair_indices, num_nodes = graph_from_molecule(mol, global_node=False)
+                #g = create_dgl_graph(pair_indices, num_nodes=num_nodes)
+                #g.ndata['features'] = torch.from_numpy(np.array(atom_features, dtype=np.float32))
+                #g.edata['features'] = torch.from_numpy(np.array(bond_features, dtype=np.float32))
+                g = smiles2graph(row['SMILES'])
+                g.ndata['features'] = torch.tensor(feat_vec(row['SMILES']))
+                #self.num_atom_feat = atom_features.shape[1]
+                #self.num_bond_feat = bond_features.shape[1]
                 self.graphs.append(g)
                 self.labels.append(label)
                 self.labels_set.add(label)
@@ -263,7 +305,8 @@ class OdourDataset(DGLDataset):
         return len(self.graphs)
 
     def statistics(self):
-        return self.num_atom_feat, self.num_bond_feat, len(self.labels_set), len(self.graphs)
+        return 9, 0,len(self.labels_set), len(self.graphs)
+        #return self.num_atom_feat, self.num_bond_feat, len(self.labels_set), len(self.graphs)
 
 
 
