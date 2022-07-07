@@ -44,7 +44,7 @@ def smiles2graph(smiles_string):
       dst.append(nz[1][i])
 
     u, v = src, dst
-    g = dgl.graph((u, v))
+    g = dgl.graph((u, v), num_nodes = nnodes)
     bg=dgl.to_bidirected(g)
 
     return bg
