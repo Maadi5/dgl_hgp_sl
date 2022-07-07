@@ -128,7 +128,7 @@ def test(model: torch.nn.Module, loader, device):
 def main(args):
     # Step 1: Prepare graph data and retrieve train/validation/test index ============================= #
     #dataset = LegacyTUDataset(args.dataset, raw_dir=args.dataset_path)
-    dataset= OdourDataset2()
+    dataset= OdourDataset()
 
     # add self loop. We add self loop for each graph here since the function "add_self_loop" does not
     # support batch graph.
