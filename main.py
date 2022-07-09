@@ -179,9 +179,10 @@ def main(args):
         s_time = time()
         train_loss = train(model, optimizer, train_loader, device)
         train_times.append(time() - s_time)
-        val_acc, val_loss = test(model, val_loader, device)
-        test_acc, _, pr_recall = test(model, test_loader, device)
-        print('precision_recall: ', pr_recall)
+        val_acc, val_loss, pr_recall_val = test(model, val_loader, device)
+        test_acc, _, pr_recall_test = test(model, test_loader, device)
+        print('precision_recall_val: ', pr_recall_val)
+        print('precision_recall_test: ', pr_recall_test)
         if best_val_loss > val_loss:
             best_val_loss = val_loss
             final_test_acc = test_acc
