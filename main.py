@@ -123,8 +123,8 @@ def test(model: torch.nn.Module, loader, device):
         pred = out.argmax(dim=1)
         loss += F.nll_loss(out, batch_labels, reduction="sum").item()
 
-        pr_recall = precision_recall(preds= out, target= batch_labels, average='none', mdmc_average=None, ignore_index=None,
-                                                 num_classes=2, threshold=0.5, top_k=None, multiclass=None)
+        pr_recall = precision_recall(preds= out, target= batch_labels, average='macro', mdmc_average=None, ignore_index=None,
+                                                 num_classes=10, threshold=0.5, top_k=None, multiclass=None)
 
 
         correct += pred.eq(batch_labels).sum().item()
