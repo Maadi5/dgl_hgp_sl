@@ -204,8 +204,8 @@ def main(args):
         if (e + 1) % args.print_every == 0:
             log_format = "Epoch {}: loss={:.4f}, val_acc={:.4f}, final_test_acc={:.4f}"
             print(log_format.format(e + 1, train_loss, val_acc, final_test_acc))
-            print('Valid precision, recall: ', sum(precision_total_valid)/len(precision_total_valid))
-            print('Test precision, recall: ', sum(precision_total_test)/len(precision_total_test))
+            print('Valid precision, recall: ', sum(precision_total_valid)/len(precision_total_valid), sum(recall_total_valid)/len(recall_total_valid))
+            print('Test precision, recall: ', sum(precision_total_test)/len(precision_total_test), sum(recall_total_test)/len(recall_total_test))
     print("Best Epoch {}, final test acc {:.4f}".format(best_epoch, final_test_acc))
     return final_test_acc, sum(train_times) / len(train_times)
 
