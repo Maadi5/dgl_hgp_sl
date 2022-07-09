@@ -16,6 +16,7 @@ from torch.utils.data import random_split
 from networks import HGPSLModel
 from utils import get_stats
 
+from torchmetrics.funcational import precision_recall
 
 
 def parse_args():
@@ -97,6 +98,7 @@ def train(model: torch.nn.Module, optimizer, trainloader, device):
         #out = model(batch_graphs, n_feat = batch_graphs.ndata["feat"], e_feat = None)   #change for dgl
         out = model(batch_graphs, n_feat=batch_graphs.ndata["features"]) #e_feat is edge_weights. not features
         loss = F.nll_loss(out, batch_labels)
+
         loss.backward()
         optimizer.step()
 
@@ -120,6 +122,12 @@ def test(model: torch.nn.Module, loader, device):
         out = model(batch_graphs, n_feat=batch_graphs.ndata["features"])
         pred = out.argmax(dim=1)
         loss += F.nll_loss(out, batch_labels, reduction="sum").item()
+
+        pr_recall = precision_recall(preds= out, target= batch_labels, average='micro', mdmc_average=None, ignore_index=None,
+                                                 num_classes=None, threshold=0.5, top_k=None, multiclass=None)
+
+        print('precision_recall: ', pr_recall)
+
         correct += pred.eq(batch_labels).sum().item()
 
     return correct / num_graphs, loss / num_graphs
