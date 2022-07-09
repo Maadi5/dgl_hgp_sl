@@ -276,23 +276,23 @@ class OdourDataset(DGLDataset):
 
     def process(self):
         savepath = '/content/drive/MyDrive/dgl_hgp_sl/dataset/'
-        df = pd.read_csv(os.path.join(savepath, ('odour_graphs_' + str('train') + '.csv')))
+        df = pd.read_csv(os.path.join(savepath, ('odour_graphs_fruity' + str('train') + '.csv')))
         self.graphs = []
         self.labels = []
         self.labels_set = set()
         for idx, row in df.iterrows():
             if row['SMILES'] != '':
 
-                # mol = molecule_from_smiles(row['SMILES'])
+                mol = molecule_from_smiles(row['SMILES'])
                 label = row['Label']
-                # atom_features, bond_features, pair_indices, num_nodes = graph_from_molecule(mol, global_node=False)
-                #g = create_dgl_graph(pair_indices, num_nodes=num_nodes)
-                #g.ndata['features'] = torch.from_numpy(np.array(atom_features, dtype=np.float32))
-                #g.edata['features'] = torch.from_numpy(np.array(bond_features, dtype=np.float32))
-                g = smiles2graph(row['SMILES'])
-                g.ndata['features'] = torch.tensor(feat_vec(row['SMILES']))
-                #self.num_atom_feat = atom_features.shape[1]
-                #self.num_bond_feat = bond_features.shape[1]
+                atom_features, bond_features, pair_indices, num_nodes = graph_from_molecule(mol, global_node=False)
+                g = create_dgl_graph(pair_indices, num_nodes=num_nodes)
+                g.ndata['features'] = torch.from_numpy(np.array(atom_features, dtype=np.float32))
+                g.edata['features'] = torch.from_numpy(np.array(bond_features, dtype=np.float32))
+                # g = smiles2graph(row['SMILES'])
+                # g.ndata['features'] = torch.tensor(feat_vec(row['SMILES']))
+                self.num_atom_feat = atom_features.shape[1]
+                self.num_bond_feat = bond_features.shape[1]
                 self.graphs.append(g)
                 self.labels.append(label)
                 self.labels_set.add(label)
@@ -305,8 +305,8 @@ class OdourDataset(DGLDataset):
         return len(self.graphs)
 
     def statistics(self):
-        return 9, 0,len(self.labels_set), len(self.graphs)
-        #return self.num_atom_feat, self.num_bond_feat, len(self.labels_set), len(self.graphs)
+        # return 9, 0,len(self.labels_set), len(self.graphs)
+        return self.num_atom_feat, self.num_bond_feat, len(self.labels_set), len(self.graphs)
 
 
 
