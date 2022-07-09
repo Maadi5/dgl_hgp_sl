@@ -276,7 +276,7 @@ class OdourDataset(DGLDataset):
 
     def process(self):
         savepath = '/content/drive/MyDrive/dgl_hgp_sl/dataset/'
-        df = pd.read_csv(os.path.join(savepath, ('odour_graphs_fruity_' + str('train') + '.csv')))
+        df = pd.read_csv(os.path.join(savepath, ('odour_graphs_' + str('train') + '.csv')))
         self.graphs = []
         self.labels = []
         self.labels_set = set()
