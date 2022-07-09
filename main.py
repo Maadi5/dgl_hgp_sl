@@ -16,7 +16,7 @@ from torch.utils.data import random_split
 from networks import HGPSLModel
 from utils import get_stats
 
-from torchmetrics.funcational import precision_recall
+from torchmetrics.functional import precision_recall
 
 
 def parse_args():
