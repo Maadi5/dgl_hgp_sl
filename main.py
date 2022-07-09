@@ -126,11 +126,10 @@ def test(model: torch.nn.Module, loader, device):
         pr_recall = precision_recall(preds= out, target= batch_labels, average='none', mdmc_average=None, ignore_index=None,
                                                  num_classes=2, threshold=0.5, top_k=None, multiclass=None)
 
-        print('precision_recall: ', pr_recall)
 
         correct += pred.eq(batch_labels).sum().item()
 
-    return correct / num_graphs, loss / num_graphs
+    return correct / num_graphs, loss / num_graphs, pr_recall
 
 
 def main(args):
@@ -181,7 +180,8 @@ def main(args):
         train_loss = train(model, optimizer, train_loader, device)
         train_times.append(time() - s_time)
         val_acc, val_loss = test(model, val_loader, device)
-        test_acc, _ = test(model, test_loader, device)
+        test_acc, _, pr_recall = test(model, test_loader, device)
+        print('precision_recall: ', pr_recall)
         if best_val_loss > val_loss:
             best_val_loss = val_loss
             final_test_acc = test_acc
