@@ -175,14 +175,22 @@ def main(args):
     final_test_acc = 0.
     best_epoch = 0
     train_times = []
+    precision_total_test = []
+    recall_total_test= []
+    precision_total_valid = []
+    recall_total_valid= []
     for e in range(args.epochs):
         s_time = time()
         train_loss = train(model, optimizer, train_loader, device)
         train_times.append(time() - s_time)
         val_acc, val_loss, pr_recall_val = test(model, val_loader, device)
         test_acc, _, pr_recall_test = test(model, test_loader, device)
-        print('precision_recall_val: ', pr_recall_val)
-        print('precision_recall_test: ', pr_recall_test)
+
+        precision_total_valid.append(pr_recall_val[0])
+        recall_total_valid.append(pr_recall_val[1])
+
+        precision_total_test.append(pr_recall_test[0])
+        recall_total_test.append(pr_recall_test[1])
         if best_val_loss > val_loss:
             best_val_loss = val_loss
             final_test_acc = test_acc
@@ -196,6 +204,8 @@ def main(args):
         if (e + 1) % args.print_every == 0:
             log_format = "Epoch {}: loss={:.4f}, val_acc={:.4f}, final_test_acc={:.4f}"
             print(log_format.format(e + 1, train_loss, val_acc, final_test_acc))
+            print('Valid precision, recall: ', sum(precision_total_valid)/len(precision_total_valid))
+            print('Test precision, recall: ', sum(precision_total_test)/len(precision_total_test))
     print("Best Epoch {}, final test acc {:.4f}".format(best_epoch, final_test_acc))
     return final_test_acc, sum(train_times) / len(train_times)
 
