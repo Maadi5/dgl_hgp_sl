@@ -251,9 +251,9 @@ def dgl_graph_from_molecule( molecule, global_node=False): #need to update globa
     return graph
 
 
-class OdourDataset(DGLDataset):
+class OdourDataset_train(DGLDataset):
     def __init__(self):
-        super(OdourDataset, self).__init__(name='odour_dataset')
+        super(OdourDataset_train, self).__init__(name='odour_dataset')
         # self.all_graphs, self.all_labels = dgl.load_graphs(graphs_path)
         # self.csv_path = csv_path
         # self.mode = mode
@@ -308,7 +308,119 @@ class OdourDataset(DGLDataset):
         # return 9, 0,len(self.labels_set), len(self.graphs)
         return self.num_atom_feat, self.num_bond_feat, len(self.labels_set), len(self.graphs)
 
+class OdourDataset_val(DGLDataset):
+    def __init__(self):
+        super(OdourDataset_val, self).__init__(name='odour_dataset')
+        # self.all_graphs, self.all_labels = dgl.load_graphs(graphs_path)
+        # self.csv_path = csv_path
+        # self.mode = mode
+        self.atom_featurizer = AtomFeaturizer(
+            allowable_sets={
+                "symbol": {"B", "Br", "C", "Ca", "Cl", "F", "H", "I", "N", "Na", "O", "P", "S"},
+                "n_valence": {0, 1, 2, 3, 4, 5, 6},
+                "n_hydrogens": {0, 1, 2, 3, 4},
+                "hybridization": {"s", "sp", "sp2", "sp3"},
+            }
+        )
 
+        self.bond_featurizer = BondFeaturizer(
+            allowable_sets={
+                "bond_type": {"single", "double", "triple", "aromatic"},
+                "conjugated": {True, False},
+            }
+        )
+
+
+    def process(self):
+        savepath = '/content/drive/MyDrive/dgl_hgp_sl/dataset/'
+        df = pd.read_csv(os.path.join(savepath, ('odour_graphs_r10_' + str('valid') + '.csv')))
+        self.graphs = []
+        self.labels = []
+        self.labels_set = set()
+        for idx, row in df.iterrows():
+            if row['SMILES'] != '':
+
+                mol = molecule_from_smiles(row['SMILES'])
+                label = row['Label']
+                atom_features, bond_features, pair_indices, num_nodes = graph_from_molecule(mol, global_node=False)
+                g = create_dgl_graph(pair_indices, num_nodes=num_nodes)
+                g.ndata['features'] = torch.from_numpy(np.array(atom_features, dtype=np.float32))
+                g.edata['features'] = torch.from_numpy(np.array(bond_features, dtype=np.float32))
+                # g = smiles2graph(row['SMILES'])
+                # g.ndata['features'] = torch.tensor(feat_vec(row['SMILES']))
+                self.num_atom_feat = atom_features.shape[1]
+                self.num_bond_feat = bond_features.shape[1]
+                self.graphs.append(g)
+                self.labels.append(label)
+                self.labels_set.add(label)
+        self.labels = torch.LongTensor(self.labels)
+
+    def __getitem__(self, i):
+        return self.graphs[i], self.labels[i]
+
+    def __len__(self):
+        return len(self.graphs)
+
+    def statistics(self):
+        # return 9, 0,len(self.labels_set), len(self.graphs)
+        return self.num_atom_feat, self.num_bond_feat, len(self.labels_set), len(self.graphs)
+
+class OdourDataset_test(DGLDataset):
+    def __init__(self):
+        super(OdourDataset_test, self).__init__(name='odour_dataset')
+        # self.all_graphs, self.all_labels = dgl.load_graphs(graphs_path)
+        # self.csv_path = csv_path
+        # self.mode = mode
+        self.atom_featurizer = AtomFeaturizer(
+            allowable_sets={
+                "symbol": {"B", "Br", "C", "Ca", "Cl", "F", "H", "I", "N", "Na", "O", "P", "S"},
+                "n_valence": {0, 1, 2, 3, 4, 5, 6},
+                "n_hydrogens": {0, 1, 2, 3, 4},
+                "hybridization": {"s", "sp", "sp2", "sp3"},
+            }
+        )
+
+        self.bond_featurizer = BondFeaturizer(
+            allowable_sets={
+                "bond_type": {"single", "double", "triple", "aromatic"},
+                "conjugated": {True, False},
+            }
+        )
+
+
+    def process(self):
+        savepath = '/content/drive/MyDrive/dgl_hgp_sl/dataset/'
+        df = pd.read_csv(os.path.join(savepath, ('odour_graphs_r10_' + str('test') + '.csv')))
+        self.graphs = []
+        self.labels = []
+        self.labels_set = set()
+        for idx, row in df.iterrows():
+            if row['SMILES'] != '':
+
+                mol = molecule_from_smiles(row['SMILES'])
+                label = row['Label']
+                atom_features, bond_features, pair_indices, num_nodes = graph_from_molecule(mol, global_node=False)
+                g = create_dgl_graph(pair_indices, num_nodes=num_nodes)
+                g.ndata['features'] = torch.from_numpy(np.array(atom_features, dtype=np.float32))
+                g.edata['features'] = torch.from_numpy(np.array(bond_features, dtype=np.float32))
+                # g = smiles2graph(row['SMILES'])
+                # g.ndata['features'] = torch.tensor(feat_vec(row['SMILES']))
+                self.num_atom_feat = atom_features.shape[1]
+                self.num_bond_feat = bond_features.shape[1]
+                self.graphs.append(g)
+                self.labels.append(label)
+                self.labels_set.add(label)
+        self.labels = torch.LongTensor(self.labels)
+
+    def __getitem__(self, i):
+        return self.graphs[i], self.labels[i]
+
+    def __len__(self):
+        return len(self.graphs)
+
+    def statistics(self):
+        # return 9, 0,len(self.labels_set), len(self.graphs)
+        return self.num_atom_feat, self.num_bond_feat, len(self.labels_set), len(self.graphs)
 
 if __name__ == "__main__":
     pass
