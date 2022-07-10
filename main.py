@@ -10,7 +10,7 @@ import dgl
 import torch
 import torch.nn
 import torch.nn.functional as F
-from dgl.data import LegacyTUDataset
+from dgl.data import LegacyTUDatasethi
 from dgl.dataloading import GraphDataLoader
 from torch.utils.data import random_split
 from sklearn.metrics import confusion_matrix, plot_confusion_matrix
@@ -19,6 +19,8 @@ from utils import get_stats
 
 from torchmetrics.functional import precision_recall
 
+import warnings
+warnings.filterwarnings('ignore')
 
 def parse_args():
     parser = argparse.ArgumentParser(description="HGP-SL-DGL")
