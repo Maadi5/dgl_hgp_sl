@@ -3,7 +3,7 @@ import json
 import logging
 import os
 from time import time
-from odourdataset import OdourDataset
+from odourdataset import OdourDataset_train, OdourDataset_val, OdourDataset_test
 from odourdataset2 import OdourDataset2
 import dgl
 import torch
@@ -135,7 +135,9 @@ def test(model: torch.nn.Module, loader, device):
 def main(args):
     # Step 1: Prepare graph data and retrieve train/validation/test index ============================= #
     #dataset = LegacyTUDataset(args.dataset, raw_dir=args.dataset_path)
-    dataset= OdourDataset()
+    train_set = OdourDataset_train()
+    val_set = OdourDataset_val()
+    test_set = OdourDataset_test()
 
     # add self loop. We add self loop for each graph here since the function "add_self_loop" does not
     # support batch graph.
@@ -144,10 +146,10 @@ def main(args):
     # for i in range(len(dataset)):
     #     dataset.graphs[i] = dgl.add_self_loop(dataset.graphs[i])
 
-    num_training = int(len(dataset) * 0.8)
-    num_val = int(len(dataset) * 0.1)
-    num_test = len(dataset) - num_val - num_training
-    train_set, val_set, test_set = random_split(dataset, [num_training, num_val, num_test])
+    # num_training = int(len(dataset) * 0.8)
+    # num_val = int(len(dataset) * 0.1)
+    # num_test = len(dataset) - num_val - num_training
+    # train_set, val_set, test_set = random_split(dataset, [num_training, num_val, num_test])
     train_loader = GraphDataLoader(train_set, batch_size=args.batch_size, shuffle=True, num_workers=6)
     val_loader = GraphDataLoader(val_set, batch_size=args.batch_size, num_workers=2)
     test_loader = GraphDataLoader(test_set, batch_size=args.batch_size, num_workers=2)
