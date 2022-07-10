@@ -221,8 +221,10 @@ def main(args):
             print(log_format.format(e + 1, train_loss, val_acc, final_test_acc))
             print('Valid precision, recall: ', (sum(precision_total_valid)/len(precision_total_valid)).item(), (sum(recall_total_valid)/len(recall_total_valid)).item())
             print('Test precision, recall: ', (sum(precision_total_test)/len(precision_total_test)).item(), (sum(recall_total_test)/len(recall_total_test)).item())
-            print('valid confusion: ', val_conf)
-            print('test confusion: ', test_conf)
+            print('valid confusion: ')
+            print(val_conf)
+            print('test confusion: ')
+            print(test_conf)
     print("Best Epoch {}, final test acc {:.4f}".format(best_epoch, final_test_acc))
     return final_test_acc, sum(train_times) / len(train_times)
 
