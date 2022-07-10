@@ -121,12 +121,12 @@ def test(model: torch.nn.Module, loader, device):
         batch_labels = batch_labels.long().to(device)
         #out = model(batch_graphs, n_feat = batch_graphs.ndata["feat"], e_feat = None)   #change for dgl
         out = model(batch_graphs, n_feat=batch_graphs.ndata["features"])
-        PalisPro = confusion_matrix(batch_labels.cpu().numpy(), out.cpu().numpy())
 
         pred = out.argmax(dim=1)
+        PalisPro = confusion_matrix(batch_labels.cpu().numpy(), pred.cpu().numpy())
         loss += F.nll_loss(out, batch_labels, reduction="sum").item()
 
-        pr_recall = precision_recall(preds= out, target= batch_labels, average='macro', mdmc_average=None, ignore_index=None,
+        pr_recall = precision_recall(preds= pred, target= batch_labels, average='macro', mdmc_average=None, ignore_index=None,
                                                  num_classes=10, threshold=0.5, top_k=None, multiclass=None)
 
 
