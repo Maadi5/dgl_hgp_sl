@@ -125,6 +125,8 @@ def test(model: torch.nn.Module, loader, device):
         out = model(batch_graphs, n_feat=batch_graphs.ndata["features"])
 
         pred = out.argmax(dim=1)
+        print('model pred: ', pred)
+        print('label: ', batch_labels)
         PalisPro = confusion_matrix(batch_labels.cpu().numpy(), pred.cpu().numpy())
         loss += F.nll_loss(out, batch_labels, reduction="sum").item()
 
