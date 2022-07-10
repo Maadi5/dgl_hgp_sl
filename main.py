@@ -13,7 +13,7 @@ import torch.nn.functional as F
 from dgl.data import LegacyTUDataset
 from dgl.dataloading import GraphDataLoader
 from torch.utils.data import random_split
-
+from sklearn.metrics import confusion_matrix, plot_confusion_matrix
 from networks import HGPSLModel
 from utils import get_stats
 
@@ -121,6 +121,8 @@ def test(model: torch.nn.Module, loader, device):
         batch_labels = batch_labels.long().to(device)
         #out = model(batch_graphs, n_feat = batch_graphs.ndata["feat"], e_feat = None)   #change for dgl
         out = model(batch_graphs, n_feat=batch_graphs.ndata["features"])
+        PalisPro = confusion_matrix(batch_graphs, out)
+
         pred = out.argmax(dim=1)
         loss += F.nll_loss(out, batch_labels, reduction="sum").item()
 
@@ -130,7 +132,7 @@ def test(model: torch.nn.Module, loader, device):
 
         correct += pred.eq(batch_labels).sum().item()
 
-    return correct / num_graphs, loss / num_graphs, pr_recall
+    return correct / num_graphs, loss / num_graphs, pr_recall, PalisPro
 
 
 def main(args):
@@ -190,8 +192,8 @@ def main(args):
         s_time = time()
         train_loss = train(model, optimizer, train_loader, device)
         train_times.append(time() - s_time)
-        val_acc, val_loss, pr_recall_val = test(model, val_loader, device)
-        test_acc, _, pr_recall_test = test(model, test_loader, device)
+        val_acc, val_loss, pr_recall_val, val_conf = test(model, val_loader, device)
+        test_acc, _, pr_recall_test, test_conf = test(model, test_loader, device)
 
         precision_total_valid.append(pr_recall_val[0])
         recall_total_valid.append(pr_recall_val[1])
@@ -208,11 +210,15 @@ def main(args):
         if bad_cound >= args.patience:
             break
 
-        if (e + 1) % args.print_every == 0:
+        if (e) % args.print_every == 0:
+
             log_format = "Epoch {}: loss={:.4f}, val_acc={:.4f}, final_test_acc={:.4f}"
             print(log_format.format(e + 1, train_loss, val_acc, final_test_acc))
-            print('Valid precision, recall: ', sum(precision_total_valid)/len(precision_total_valid), sum(recall_total_valid)/len(recall_total_valid))
-            print('Test precision, recall: ', sum(precision_total_test)/len(precision_total_test), sum(recall_total_test)/len(recall_total_test))
+            print('Valid precision, recall: ', (sum(precision_total_valid)/len(precision_total_valid)).item(), (sum(recall_total_valid)/len(recall_total_valid)).item())
+            print('Test precision, recall: ', (sum(precision_total_test)/len(precision_total_test)).item(), (sum(recall_total_test)/len(recall_total_test)).item())
+            print('val confusion: ', val_conf)
+            print('test confusion: ', test_conf)
+
     print("Best Epoch {}, final test acc {:.4f}".format(best_epoch, final_test_acc))
     return final_test_acc, sum(train_times) / len(train_times)
 
