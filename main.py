@@ -18,7 +18,7 @@ from networks import HGPSLModel
 from utils import get_stats
 from pathlib import Path
 from torchmetrics.functional import precision_recall
-
+import numpy as np
 import warnings
 warnings.filterwarnings('ignore')
 
@@ -138,7 +138,7 @@ def test(model: torch.nn.Module, loader, device):
 
         correct += pred.eq(batch_labels).sum().item()
     confusion = confusion_matrix(labels_all, pred_all)
-    pr_recall = precision_recall(preds=pred_all, target=labels_all, average='macro', mdmc_average=None, ignore_index=None,
+    pr_recall = precision_recall(preds= np.array(pred_all), target= np.array(labels_all), average='macro', mdmc_average=None, ignore_index=None,
                                  num_classes=10, threshold=0.5, top_k=None, multiclass=None)
 
     return correct / num_graphs, loss / num_graphs, pr_recall, confusion
