@@ -135,9 +135,9 @@ def test(model: torch.nn.Module, loader, device):
                                                  num_classes=10, threshold=0.5, top_k=None, multiclass=None)
 
         correct += pred.eq(batch_labels).sum().item()
-    PalisPro = confusion_matrix(labels_all, pred_all)
+    confusion = confusion_matrix(labels_all, pred_all)
 
-    return correct / num_graphs, loss / num_graphs, pr_recall, PalisPro
+    return correct / num_graphs, loss / num_graphs, pr_recall, confusion
 
 
 def main(args):
