@@ -16,11 +16,16 @@ from torch.utils.data import random_split
 from sklearn.metrics import confusion_matrix, plot_confusion_matrix
 from networks import HGPSLModel
 from utils import get_stats
-
+from pathlib import Path
 from torchmetrics.functional import precision_recall
 
 import warnings
 warnings.filterwarnings('ignore')
+
+save_weights = '/content/drive/MyDrive/dgl_hgp_sl/weights'
+
+if not os.path.exists(save_weights):
+    os.makedirs(save_weights)
 
 def parse_args():
     parser = argparse.ArgumentParser(description="HGP-SL-DGL")
@@ -221,7 +226,7 @@ def main(args):
             print(val_conf)
             print('test confusion: ')
             print(test_conf)
-            torch.save(model, 'odour3_weights_'+str(e)+'.pt')
+            torch.save(model, str(Path(save_weights)/('odour3_weights_'+str(e)+'.pt')))
     print("Best Epoch {}, final test acc {:.4f}".format(best_epoch, final_test_acc))
     return final_test_acc, sum(train_times) / len(train_times)
 
