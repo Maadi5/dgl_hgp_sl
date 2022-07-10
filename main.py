@@ -4,7 +4,7 @@ import logging
 import os
 from time import time
 #from odourdataset import OdourDataset_train, OdourDataset_val, OdourDataset_test
-from odourdataset3 import OdourDataset_train, OdourDataset_val, OdourDataset_test
+from odourdataset import OdourDataset_train, OdourDataset_val, OdourDataset_test
 from odourdataset2 import OdourDataset2
 import dgl
 import torch
@@ -221,7 +221,7 @@ def main(args):
             print(val_conf)
             print('test confusion: ')
             print(test_conf)
-            torch.save(model, str(Path(save_weights)/('odour3_weights_'+str(e)+'.pt')))
+            torch.save(model, str(Path(save_weights)/('odour0_weights_'+str(e)+'.pt')))
     print("Best Epoch {}, final test acc {:.4f}".format(best_epoch, final_test_acc))
     return final_test_acc, sum(train_times) / len(train_times)
 
