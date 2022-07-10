@@ -3,7 +3,8 @@ import json
 import logging
 import os
 from time import time
-from odourdataset import OdourDataset_train, OdourDataset_val, OdourDataset_test
+#from odourdataset import OdourDataset_train, OdourDataset_val, OdourDataset_test
+from odourdataset3 import OdourDataset_train, OdourDataset_val, OdourDataset_test
 from odourdataset2 import OdourDataset2
 import dgl
 import torch
@@ -143,8 +144,12 @@ def main(args):
     # support batch graph.
 
     #commenting self_loop code since already implemented during dataset creation
-    # for i in range(len(dataset)):
-    #     dataset.graphs[i] = dgl.add_self_loop(dataset.graphs[i])
+    for i in range(len(train_set)):
+        train_set.graphs[i] = dgl.add_self_loop(train_set.graphs[i])
+    for i in range(len(val_set)):
+        val_set.graphs[i] = dgl.add_self_loop(val_set.graphs[i])
+    for i in range(len(test_set)):
+        test_set.graphs[i] = dgl.add_self_loop(test_set.graphs[i])
 
     # num_training = int(len(dataset) * 0.8)
     # num_val = int(len(dataset) * 0.1)
