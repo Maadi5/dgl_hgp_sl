@@ -203,7 +203,7 @@ def main(args):
 
         if best_val_loss > val_loss:
             best_val_loss = val_loss
-            final_test_acc = test_accK
+            final_test_acc = test_acc
             bad_cound = 0
             best_epoch = e + 1
         else:
