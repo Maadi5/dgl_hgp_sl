@@ -193,10 +193,7 @@ def main(args):
     final_test_acc = 0.
     best_epoch = 0
     train_times = []
-    precision_total_test = []
-    recall_total_test= []
-    precision_total_valid = []
-    recall_total_valid= []
+
     for e in range(args.epochs):
         s_time = time()
         train_loss = train(model, optimizer, train_loader, device)
@@ -204,11 +201,9 @@ def main(args):
         val_acc, val_loss, pr_recall_val, val_conf = test(model, val_loader, device)
         test_acc, _, pr_recall_test, test_conf = test(model, test_loader, device)
 
-
-        recall_total_test.append(pr_recall_test[1])
         if best_val_loss > val_loss:
             best_val_loss = val_loss
-            final_test_acc = test_acc
+            final_test_acc = test_accK
             bad_cound = 0
             best_epoch = e + 1
         else:
