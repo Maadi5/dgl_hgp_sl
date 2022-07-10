@@ -200,10 +200,7 @@ def main(args):
         val_acc, val_loss, pr_recall_val, val_conf = test(model, val_loader, device)
         test_acc, _, pr_recall_test, test_conf = test(model, test_loader, device)
 
-        precision_total_valid.append(pr_recall_val[0])
-        recall_total_valid.append(pr_recall_val[1])
 
-        precision_total_test.append(pr_recall_test[0])
         recall_total_test.append(pr_recall_test[1])
         if best_val_loss > val_loss:
             best_val_loss = val_loss
@@ -219,8 +216,8 @@ def main(args):
 
             log_format = "Epoch {}: loss={:.4f}, val_acc={:.4f}, final_test_acc={:.4f}"
             print(log_format.format(e + 1, train_loss, val_acc, final_test_acc))
-            print('Valid precision, recall: ', (sum(precision_total_valid)/len(precision_total_valid)).item(), (sum(recall_total_valid)/len(recall_total_valid)).item())
-            print('Test precision, recall: ', (sum(precision_total_test)/len(precision_total_test)).item(), (sum(recall_total_test)/len(recall_total_test)).item())
+            print('Valid precision, recall: ', (pr_recall_val[0]).item(), (pr_recall_val[1]).item())
+            print('Test precision, recall: ', (pr_recall_test[0]).item(), (pr_recall_test[1]).item())
             print('valid confusion: ')
             print(val_conf)
             print('test confusion: ')
