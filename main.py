@@ -113,6 +113,8 @@ def train(model: torch.nn.Module, optimizer, trainloader, device):
 @torch.no_grad()
 def test(model: torch.nn.Module, loader, device):
     model.eval()
+    labels_all = []
+    pred_all = []
     correct = 0.
     loss = 0.
     num_graphs = 0
@@ -125,16 +127,15 @@ def test(model: torch.nn.Module, loader, device):
         out = model(batch_graphs, n_feat=batch_graphs.ndata["features"])
 
         pred = out.argmax(dim=1)
-        print('model pred: ', pred)
-        print('label: ', batch_labels)
-        PalisPro = confusion_matrix(batch_labels.cpu().numpy(), pred.cpu().numpy())
+        labels_all.extend(batch_labels.cpu().numpy())
+        pred_all.extend(pred.cpu().numpy())
         loss += F.nll_loss(out, batch_labels, reduction="sum").item()
 
         pr_recall = precision_recall(preds= pred, target= batch_labels, average='macro', mdmc_average=None, ignore_index=None,
                                                  num_classes=10, threshold=0.5, top_k=None, multiclass=None)
 
-
         correct += pred.eq(batch_labels).sum().item()
+    PalisPro = confusion_matrix(labels_all, pred_all)
 
     return correct / num_graphs, loss / num_graphs, pr_recall, PalisPro
 
@@ -220,9 +221,8 @@ def main(args):
             print(log_format.format(e + 1, train_loss, val_acc, final_test_acc))
             print('Valid precision, recall: ', (sum(precision_total_valid)/len(precision_total_valid)).item(), (sum(recall_total_valid)/len(recall_total_valid)).item())
             print('Test precision, recall: ', (sum(precision_total_test)/len(precision_total_test)).item(), (sum(recall_total_test)/len(recall_total_test)).item())
-            print('val confusion: ', val_conf)
+            print('valid confusion: ', val_conf)
             print('test confusion: ', test_conf)
-
     print("Best Epoch {}, final test acc {:.4f}".format(best_epoch, final_test_acc))
     return final_test_acc, sum(train_times) / len(train_times)
 
