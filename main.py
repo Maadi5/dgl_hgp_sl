@@ -116,7 +116,7 @@ def train(model: torch.nn.Module, optimizer, trainloader, device):
 
 
 @torch.no_grad()
-def test(model: torch.nn.Module, loader, device):
+def test(model: torch.nn.Module, loader, device, num_classes):
     model.eval()
     labels_all = []
     pred_all = []
@@ -139,7 +139,7 @@ def test(model: torch.nn.Module, loader, device):
         correct += pred.eq(batch_labels).sum().item()
     confusion = confusion_matrix(labels_all, pred_all)
     pr_recall = precision_recall(preds= torch.tensor(pred_all), target= torch.tensor(labels_all), average='macro', mdmc_average=None, ignore_index=None,
-                                 num_classes=10, threshold=0.5, top_k=None, multiclass=None)
+                                 num_classes=num_classes, threshold=0.5, top_k=None, multiclass=None)
 
     return correct / num_graphs, loss / num_graphs, pr_recall, confusion
 
@@ -198,8 +198,8 @@ def main(args):
         s_time = time()
         train_loss = train(model, optimizer, train_loader, device)
         train_times.append(time() - s_time)
-        val_acc, val_loss, pr_recall_val, val_conf = test(model, val_loader, device)
-        test_acc, _, pr_recall_test, test_conf = test(model, test_loader, device)
+        val_acc, val_loss, pr_recall_val, val_conf = test(model, val_loader, device, num_classes)
+        test_acc, _, pr_recall_test, test_conf = test(model, test_loader, device, num_classes)
 
         if best_val_loss > val_loss:
             best_val_loss = val_loss
