@@ -140,8 +140,8 @@ def test(model: torch.nn.Module, loader, device, num_classes):
         #loss += F.nll_loss(out, batch_labels, reduction="sum").item()
         #loss = F.nll_loss(out, batch_labels)
         loss = criterion(out.to(dtype=torch.float32), batch_labels.to(dtype=torch.float32))
-        print('out: ', out.shape)
-        print('labels: ', batch_labels.shape)
+        # print('out: ', out.shape)
+        # print('labels: ', batch_labels.shape)
         correct += pred.eq(batch_labels).sum().item()
     confusion = confusion_matrix(labels_all, pred_all)
     pr_recall = precision_recall(preds= torch.tensor(pred_all), target= torch.tensor(labels_all), average='macro', mdmc_average=None, ignore_index=None,
