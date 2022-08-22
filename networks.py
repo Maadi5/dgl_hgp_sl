@@ -47,7 +47,7 @@ class HGPSLModel(torch.nn.Module):
         self.dropout = dropout
         self.num_layers = conv_layers
         self.pool_ratio = pool_ratio
-
+        self.sigm = torch.nn.Sigmoid()
         convpools = []
         for i in range(conv_layers):
             c_in = in_feat if i == 0 else hid_feat
@@ -79,5 +79,5 @@ class HGPSLModel(torch.nn.Module):
         n_feat = F.relu(self.lin2(n_feat))
         n_feat = F.dropout(n_feat, p=self.dropout, training=self.training)
         n_feat = self.lin3(n_feat)
-
-        return F.log_softmax(n_feat, dim=-1)
+        return self.sigm(n_feat)
+        #return F.log_softmax(n_feat, dim=-1)
