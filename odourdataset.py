@@ -279,7 +279,7 @@ class OdourDataset_train(DGLDataset):
         df = pd.read_csv(os.path.join(savepath, ('odour_graphs_leff_' + str('train') + '.csv')))
         self.graphs = []
         self.labels = []
-        self.labels_set = set()
+        self.labels_set = []
         for idx, row in df.iterrows():
             if row['IsomericSMILES'] != '':
 
@@ -295,7 +295,7 @@ class OdourDataset_train(DGLDataset):
                 self.num_bond_feat = bond_features.shape[1]
                 self.graphs.append(g)
                 self.labels.append(label)
-                self.labels_set.add(label)
+                self.labels_set.append(label)
         self.labels = torch.LongTensor(self.labels)
 
     def __getitem__(self, i):
@@ -336,7 +336,7 @@ class OdourDataset_val(DGLDataset):
         df = pd.read_csv(os.path.join(savepath, ('odour_graphs_leff_' + str('valid') + '.csv')))
         self.graphs = []
         self.labels = []
-        self.labels_set = set()
+        self.labels_set = []
         for idx, row in df.iterrows():
             if row['IsomericSMILES'] != '':
 
@@ -352,7 +352,7 @@ class OdourDataset_val(DGLDataset):
                 self.num_bond_feat = bond_features.shape[1]
                 self.graphs.append(g)
                 self.labels.append(label)
-                self.labels_set.add(label)
+                self.labels_set.append(label)
         self.labels = torch.LongTensor(self.labels)
 
     def __getitem__(self, i):
@@ -393,7 +393,7 @@ class OdourDataset_test(DGLDataset):
         df = pd.read_csv(os.path.join(savepath, ('odour_graphs_leff_' + str('test') + '.csv')))
         self.graphs = []
         self.labels = []
-        self.labels_set = set()
+        self.labels_set = []
         for idx, row in df.iterrows():
             if row['IsomericSMILES'] != '':
                 mol = molecule_from_smiles(row['IsomericSMILES'])
@@ -408,7 +408,7 @@ class OdourDataset_test(DGLDataset):
                 self.num_bond_feat = bond_features.shape[1]
                 self.graphs.append(g)
                 self.labels.append(label)
-                self.labels_set.add(label)
+                self.labels_set.append(label)
         self.labels = torch.LongTensor(self.labels)
 
     def __getitem__(self, i):
