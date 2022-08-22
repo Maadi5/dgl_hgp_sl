@@ -276,7 +276,7 @@ class OdourDataset_train(DGLDataset):
 
     def process(self):
         savepath = '/content/drive/MyDrive/dgl_hgp_sl/dataset/'
-        df = pd.read_csv(os.path.join(savepath, ('odour_graphs_leff_' + str('train') + '.csv')), index_col=False)
+        df = pd.read_csv(os.path.join(savepath, ('odour_graphs_leff_' + str('train') + '.csv')))#, index_col=False)
         self.graphs = []
         self.labels = []
         self.labels_set = []
@@ -284,8 +284,8 @@ class OdourDataset_train(DGLDataset):
             if row['IsomericSMILES'] != '':
 
                 mol = molecule_from_smiles(row['IsomericSMILES'])
-                #print(list(row))
-                label = [int(i) for i in list(row)[2:]]
+                print(list(row))
+                label = [int(i) for i in list(row)[3:]]
                 atom_features, bond_features, pair_indices, num_nodes = graph_from_molecule(mol, global_node=True)
                 g = create_dgl_graph(pair_indices, num_nodes=num_nodes)
                 g.ndata['features'] = torch.from_numpy(np.array(atom_features, dtype=np.float32))
@@ -342,7 +342,7 @@ class OdourDataset_val(DGLDataset):
             if row['IsomericSMILES'] != '':
 
                 mol = molecule_from_smiles(row['IsomericSMILES'])
-                label = [int(i) for i in list(row)[2:]]
+                label = [int(i) for i in list(row)[3:]]
                 atom_features, bond_features, pair_indices, num_nodes = graph_from_molecule(mol, global_node=True)
                 g = create_dgl_graph(pair_indices, num_nodes=num_nodes)
                 g.ndata['features'] = torch.from_numpy(np.array(atom_features, dtype=np.float32))
@@ -398,7 +398,7 @@ class OdourDataset_test(DGLDataset):
         for idx, row in df.iterrows():
             if row['IsomericSMILES'] != '':
                 mol = molecule_from_smiles(row['IsomericSMILES'])
-                label = [int(i) for i in list(row)[2:]]
+                label = [int(i) for i in list(row)[3:]]
                 atom_features, bond_features, pair_indices, num_nodes = graph_from_molecule(mol, global_node=True)
                 g = create_dgl_graph(pair_indices, num_nodes=num_nodes)
                 g.ndata['features'] = torch.from_numpy(np.array(atom_features, dtype=np.float32))
