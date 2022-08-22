@@ -276,15 +276,15 @@ class OdourDataset_train(DGLDataset):
 
     def process(self):
         savepath = '/content/drive/MyDrive/dgl_hgp_sl/dataset/'
-        df = pd.read_csv(os.path.join(savepath, ('odour_graphs_f_' + str('train') + '.csv')))
+        df = pd.read_csv(os.path.join(savepath, ('odour_graphs_leff_' + str('train') + '.csv')))
         self.graphs = []
         self.labels = []
         self.labels_set = set()
         for idx, row in df.iterrows():
-            if row['SMILES'] != '':
+            if row['IsomericSMILES'] != '':
 
-                mol = molecule_from_smiles(row['SMILES'])
-                label = row['Label']
+                mol = molecule_from_smiles(row['IsomericSMILES'])
+                label = list(row)[2:]
                 atom_features, bond_features, pair_indices, num_nodes = graph_from_molecule(mol, global_node=True)
                 g = create_dgl_graph(pair_indices, num_nodes=num_nodes)
                 g.ndata['features'] = torch.from_numpy(np.array(atom_features, dtype=np.float32))
@@ -333,15 +333,15 @@ class OdourDataset_val(DGLDataset):
 
     def process(self):
         savepath = '/content/drive/MyDrive/dgl_hgp_sl/dataset/'
-        df = pd.read_csv(os.path.join(savepath, ('odour_graphs_f_' + str('valid') + '.csv')))
+        df = pd.read_csv(os.path.join(savepath, ('odour_graphs_leff_' + str('valid') + '.csv')))
         self.graphs = []
         self.labels = []
         self.labels_set = set()
         for idx, row in df.iterrows():
-            if row['SMILES'] != '':
+            if row['IsomericSMILES'] != '':
 
-                mol = molecule_from_smiles(row['SMILES'])
-                label = row['Label']
+                mol = molecule_from_smiles(row['IsomericSMILES'])
+                label = list(row)[2:]
                 atom_features, bond_features, pair_indices, num_nodes = graph_from_molecule(mol, global_node=True)
                 g = create_dgl_graph(pair_indices, num_nodes=num_nodes)
                 g.ndata['features'] = torch.from_numpy(np.array(atom_features, dtype=np.float32))
@@ -390,15 +390,14 @@ class OdourDataset_test(DGLDataset):
 
     def process(self):
         savepath = '/content/drive/MyDrive/dgl_hgp_sl/dataset/'
-        df = pd.read_csv(os.path.join(savepath, ('odour_graphs_f_' + str('test') + '.csv')))
+        df = pd.read_csv(os.path.join(savepath, ('odour_graphs_leff_' + str('test') + '.csv')))
         self.graphs = []
         self.labels = []
         self.labels_set = set()
         for idx, row in df.iterrows():
-            if row['SMILES'] != '':
-
-                mol = molecule_from_smiles(row['SMILES'])
-                label = row['Label']
+            if row['IsomericSMILES'] != '':
+                mol = molecule_from_smiles(row['IsomericSMILES'])
+                label = list(row)[2:]
                 atom_features, bond_features, pair_indices, num_nodes = graph_from_molecule(mol, global_node=True)
                 g = create_dgl_graph(pair_indices, num_nodes=num_nodes)
                 g.ndata['features'] = torch.from_numpy(np.array(atom_features, dtype=np.float32))

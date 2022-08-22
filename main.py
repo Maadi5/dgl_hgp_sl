@@ -155,12 +155,12 @@ def main(args):
     # support batch graph.
 
     #commenting self_loop code since already implemented during dataset creation
-    for i in range(len(train_set)):
-        train_set.graphs[i] = dgl.add_self_loop(train_set.graphs[i])
-    for i in range(len(val_set)):
-        val_set.graphs[i] = dgl.add_self_loop(val_set.graphs[i])
-    for i in range(len(test_set)):
-        test_set.graphs[i] = dgl.add_self_loop(test_set.graphs[i])
+    # for i in range(len(train_set)):
+    #     train_set.graphs[i] = dgl.add_self_loop(train_set.graphs[i])
+    # for i in range(len(val_set)):
+    #     val_set.graphs[i] = dgl.add_self_loop(val_set.graphs[i])
+    # for i in range(len(test_set)):
+    #     test_set.graphs[i] = dgl.add_self_loop(test_set.graphs[i])
 
     # num_training = int(len(dataset) * 0.8)
     # num_val = int(len(dataset) * 0.1)
@@ -235,7 +235,7 @@ if __name__ == "__main__":
         acc, train_time = main(args)
         res.append(acc)
         train_times.append(train_time)
-
+    print(' odourdataset: ', OdourDataset_train)
     mean, err_bd = get_stats(res, conf_interval=False)
     print("mean acc: {:.4f}, error bound: {:.4f}".format(mean, err_bd))
 
