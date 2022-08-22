@@ -307,7 +307,7 @@ class OdourDataset_train(DGLDataset):
 
     def statistics(self):
         # return 9, 0,len(self.labels_set), len(self.graphs)
-        return self.num_atom_feat, self.num_bond_feat, len(self.labels_set), len(self.graphs)
+        return self.num_atom_feat, self.num_bond_feat, len(self.labels_set[0]), len(self.graphs)
 
 class OdourDataset_val(DGLDataset):
     def __init__(self):
@@ -364,7 +364,7 @@ class OdourDataset_val(DGLDataset):
 
     def statistics(self):
         # return 9, 0,len(self.labels_set), len(self.graphs)
-        return self.num_atom_feat, self.num_bond_feat, len(self.labels_set), len(self.graphs)
+        return self.num_atom_feat, self.num_bond_feat, len(self.labels_set[0]), len(self.graphs)
 
 class OdourDataset_test(DGLDataset):
     def __init__(self):
@@ -420,7 +420,7 @@ class OdourDataset_test(DGLDataset):
 
     def statistics(self):
         # return 9, 0,len(self.labels_set), len(self.graphs)
-        return self.num_atom_feat, self.num_bond_feat, len(self.labels_set), len(self.graphs)
+        return self.num_atom_feat, self.num_bond_feat,len(self.labels_set[0]), len(self.graphs)
 
 if __name__ == "__main__":
     pass
