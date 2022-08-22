@@ -109,7 +109,7 @@ def train(model: torch.nn.Module, optimizer, trainloader, device):
         #loss = F.nll_loss(out, batch_labels)
         print(out.shape)
         # print(batch_labels)
-        loss = criterion(out, batch_labels)
+        loss = criterion(out.to(dtype=torch.float32), batch_labels.to(dtype= torch.float32))
 
         loss.backward()
         optimizer.step()
@@ -141,7 +141,7 @@ def test(model: torch.nn.Module, loader, device, num_classes):
         pred_all.extend(pred.cpu().numpy())
         #loss += F.nll_loss(out, batch_labels, reduction="sum").item()
         #loss = F.nll_loss(out, batch_labels)
-        loss = criterion(out, batch_labels)
+        loss = criterion(out.to(dtype=torch.float32), batch_labels.to(dtype=torch.float32))
         correct += pred.eq(batch_labels).sum().item()
     confusion = confusion_matrix(labels_all, pred_all)
     pr_recall = precision_recall(preds= torch.tensor(pred_all), target= torch.tensor(labels_all), average='macro', mdmc_average=None, ignore_index=None,
