@@ -284,7 +284,7 @@ class OdourDataset_train(DGLDataset):
             if row['IsomericSMILES'] != '':
 
                 mol = molecule_from_smiles(row['IsomericSMILES'])
-                label = list(row)[2:]
+                label = [int(i) for i in list(row)[2:]]
                 atom_features, bond_features, pair_indices, num_nodes = graph_from_molecule(mol, global_node=True)
                 g = create_dgl_graph(pair_indices, num_nodes=num_nodes)
                 g.ndata['features'] = torch.from_numpy(np.array(atom_features, dtype=np.float32))
@@ -341,7 +341,7 @@ class OdourDataset_val(DGLDataset):
             if row['IsomericSMILES'] != '':
 
                 mol = molecule_from_smiles(row['IsomericSMILES'])
-                label = list(row)[2:]
+                label = [int(i) for i in list(row)[2:]]
                 atom_features, bond_features, pair_indices, num_nodes = graph_from_molecule(mol, global_node=True)
                 g = create_dgl_graph(pair_indices, num_nodes=num_nodes)
                 g.ndata['features'] = torch.from_numpy(np.array(atom_features, dtype=np.float32))
