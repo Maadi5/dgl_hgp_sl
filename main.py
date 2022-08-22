@@ -98,6 +98,7 @@ def train(model: torch.nn.Module, optimizer, trainloader, device):
     model.train()
     total_loss = 0.
     num_batches = len(trainloader)
+    criterion = torch.nn.BCELoss()
     for batch in trainloader:
         optimizer.zero_grad()
         batch_graphs, batch_labels = batch
@@ -108,7 +109,7 @@ def train(model: torch.nn.Module, optimizer, trainloader, device):
         #loss = F.nll_loss(out, batch_labels)
         print(out)
         print(batch_labels)
-        loss = torch.nn.BCELoss(out, batch_labels)
+        loss = criterion(out, batch_labels)
 
         loss.backward()
         optimizer.step()
@@ -126,6 +127,7 @@ def test(model: torch.nn.Module, loader, device, num_classes):
     correct = 0.
     loss = 0.
     num_graphs = 0
+    criterion = torch.nn.BCELoss()
     for batch in loader:
         batch_graphs, batch_labels = batch
         num_graphs += batch_labels.size(0)
@@ -139,7 +141,7 @@ def test(model: torch.nn.Module, loader, device, num_classes):
         pred_all.extend(pred.cpu().numpy())
         #loss += F.nll_loss(out, batch_labels, reduction="sum").item()
         #loss = F.nll_loss(out, batch_labels)
-        loss = torch.nn.BCELoss(out, batch_labels)
+        loss = criterion(out, batch_labels)
         correct += pred.eq(batch_labels).sum().item()
     confusion = confusion_matrix(labels_all, pred_all)
     pr_recall = precision_recall(preds= torch.tensor(pred_all), target= torch.tensor(labels_all), average='macro', mdmc_average=None, ignore_index=None,
