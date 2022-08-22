@@ -107,7 +107,7 @@ def train(model: torch.nn.Module, optimizer, trainloader, device):
         #out = model(batch_graphs, n_feat = batch_graphs.ndata["feat"], e_feat = None)   #change for dgl
         out = model(batch_graphs, n_feat=batch_graphs.ndata["features"]) #e_feat is edge_weights. not features
         #loss = F.nll_loss(out, batch_labels)
-        print(out.shape)
+        #print(out.shape)
         # print(batch_labels)
         loss = criterion(out.to(dtype=torch.float32), batch_labels.to(dtype= torch.float32))
 

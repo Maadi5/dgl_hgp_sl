@@ -281,6 +281,8 @@ class OdourDataset_train(DGLDataset):
         self.labels = []
         self.labels_set = []
         for idx, row in df.iterrows():
+            if idx>= df.shape[0]-1:
+                break
             if row['IsomericSMILES'] != '':
 
                 mol = molecule_from_smiles(row['IsomericSMILES'])
