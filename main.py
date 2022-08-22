@@ -98,7 +98,7 @@ def train(model: torch.nn.Module, optimizer, trainloader, device):
     model.train()
     total_loss = 0.
     num_batches = len(trainloader)
-    criterion = torch.nn.BCELoss()
+    criterion = torch.nn.BCEWithLogitsLoss()
     for batch in trainloader:
         optimizer.zero_grad()
         batch_graphs, batch_labels = batch
@@ -127,7 +127,7 @@ def test(model: torch.nn.Module, loader, device, num_classes):
     correct = 0.
     loss = 0.
     num_graphs = 0
-    criterion = torch.nn.BCELoss()
+    criterion = torch.nn.BCEWithLogitsLoss()
     for batch in loader:
         batch_graphs, batch_labels = batch
         num_graphs += batch_labels.size(0)
