@@ -303,6 +303,8 @@ class OdourDataset_train(DGLDataset):
                 self.labels.append(label)
                 self.labels_set.append(label)
         self.labels = torch.LongTensor(self.labels)
+        print ("train batch label shape",self.labels.shape)
+
 
     def __getitem__(self, i):
         return self.graphs[i], self.labels[i]
