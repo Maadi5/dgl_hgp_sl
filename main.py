@@ -139,6 +139,9 @@ def test(model: torch.nn.Module, loader, device, num_classes):
         pred_all.extend(pred.cpu().numpy())
         #loss += F.nll_loss(out, batch_labels, reduction="sum").item()
         #loss = F.nll_loss(out, batch_labels)
+        print (out.shape)
+        print (batch_labels.shape)
+        continue
         loss = criterion(out.to(dtype=torch.float32), batch_labels.to(dtype=torch.float32))
         # print('out: ', out.shape)
         # print('labels: ', batch_labels.shape)
