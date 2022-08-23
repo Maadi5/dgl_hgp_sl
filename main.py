@@ -182,9 +182,9 @@ def main(args):
     val_loader = GraphDataLoader(val_set, batch_size=args.batch_size, num_workers=2)
     print ("maadi",test_set)
     test_loader = GraphDataLoader(test_set, batch_size=args.batch_size, shuffle=True, num_workers=2)
-    # for shite in test_loader:
-    #     print ("shit me pls", shite[1].shape)
-    #
+    for shite in test_loader:
+        print ("shit me pls", shite[1].shape)
+
     # for shite in train_loader:
     #     print ("shit me pls train", shite[1].shape)
     #
@@ -216,7 +216,7 @@ def main(args):
         s_time = time()
         train_loss = train(model, optimizer, train_loader, device)
         train_times.append(time() - s_time)
-        val_acc, val_loss, pr_recall_val, val_conf = test(model, val_loader, device, num_classes)
+        #val_acc, val_loss, pr_recall_val, val_conf = test(model, val_loader, device, num_classes)
         test_acc, _, pr_recall_test, test_conf = test(model, test_loader, device, num_classes)
 
         if best_val_loss > val_loss:
