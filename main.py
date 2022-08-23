@@ -180,6 +180,12 @@ def main(args):
     val_loader = GraphDataLoader(val_set, batch_size=args.batch_size, num_workers=2)
     print ("maadi",test_set)
     test_loader = GraphDataLoader(test_set, batch_size=args.batch_size, shuffle=True, num_workers=2)
+    for shite in test_loader:
+        print ("shit me pls", shite)
+        break
+    for shite in train_loader:
+        print ("shit me pls train", shite)
+        break
 
     device = torch.device(args.device)
 
