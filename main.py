@@ -128,6 +128,8 @@ def test(model: torch.nn.Module, loader, device, num_classes):
     criterion = torch.nn.BCEWithLogitsLoss()
     for batch in loader:
         batch_graphs, batch_labels = batch
+        print ("WTF AF", batch_labels.shape)
+        continue
         num_graphs += batch_labels.size(0)
         batch_graphs = batch_graphs.to(device)
         batch_labels = batch_labels.long().to(device)
@@ -180,13 +182,13 @@ def main(args):
     val_loader = GraphDataLoader(val_set, batch_size=args.batch_size, num_workers=2)
     print ("maadi",test_set)
     test_loader = GraphDataLoader(test_set, batch_size=args.batch_size, shuffle=True, num_workers=2)
-    for shite in test_loader:
-        print ("shit me pls", shite[1].shape)
-
-    for shite in train_loader:
-        print ("shit me pls train", shite[1].shape)
-
-    device = torch.device(args.device)
+    # for shite in test_loader:
+    #     print ("shit me pls", shite[1].shape)
+    #
+    # for shite in train_loader:
+    #     print ("shit me pls train", shite[1].shape)
+    #
+    # device = torch.device(args.device)
 
     # Step 2: Create model =================================================================== #
     #num_n_feature, num_classes, _ = dataset.statistics() #get edge classes in dgl dataset
