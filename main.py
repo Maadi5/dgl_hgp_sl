@@ -118,7 +118,7 @@ def train(model: torch.nn.Module, optimizer, trainloader, device):
 
 
 @torch.no_grad()
-def test(model: torch.nn.Module, loader, device, num_classes):
+def test(model: torch.nn.Module, loader, device, num_classes, e):
     savepath = '/content/drive/MyDrive/dgl_hgp_sl/dataset/'
     id2label = json.load(open(os.path.join(savepath,"id2label_leff.json")))
     print (id2label)
@@ -128,6 +128,8 @@ def test(model: torch.nn.Module, loader, device, num_classes):
     correct = 0.
     loss = 0.
     num_graphs = 0
+    total_loss = 0
+    num_batches = len(loader)
     criterion = torch.nn.BCEWithLogitsLoss()
     for batch in loader:
         batch_graphs, batch_labels = batch
@@ -137,23 +139,24 @@ def test(model: torch.nn.Module, loader, device, num_classes):
         #out = model(batch_graphs, n_feat = batch_graphs.ndata["feat"], e_feat = None)   #change for dgl
         out = model(batch_graphs, n_feat=batch_graphs.ndata["features"])
         sig_out = torch.sigmoid(out)
-        print ("outputs", sig_out)
-        pred_list = []
-        label_list = []
-        for b in batch_labels:
-            l_list = []
-            idd = np.where(b.cpu().numpy() == 1)[0]
-            for bb in idd:
-                l_list.append(id2label[str(bb)])
-            label_list.append(l_list)
-        for each_t in sig_out:
-            p_list = []
-            for e in each_t.cpu().numpy().argsort():
-                if each_t[e] > 0.1:
-                    p_list.append(id2label[str(e)])
-            pred_list.append(p_list)
-        for iss in range(len(pred_list)):
-            print (label_list[iss], pred_list[iss])
+        if e % 20 == 0:
+            print ("outputs", sig_out)
+            pred_list = []
+            label_list = []
+            for b in batch_labels:
+                l_list = []
+                idd = np.where(b.cpu().numpy() == 1)[0]
+                for bb in idd:
+                    l_list.append(id2label[str(bb)])
+                label_list.append(l_list)
+            for each_t in sig_out:
+                p_list = []
+                for e in each_t.cpu().numpy().argsort():
+                    if each_t[e] > 0.1:
+                        p_list.append(id2label[str(e)])
+                pred_list.append(p_list)
+            for iss in range(len(pred_list)):
+                print (label_list[iss], pred_list[iss])
 
         pred = out.argmax(dim=1)
         labels_all.extend(batch_labels.cpu().numpy())
@@ -161,7 +164,7 @@ def test(model: torch.nn.Module, loader, device, num_classes):
         #loss += F.nll_loss(out, batch_labels, reduction="sum").item()
         #loss = F.nll_loss(out, batch_labels)
         loss = criterion(out.to(dtype=torch.float32), batch_labels.to(dtype=torch.float32))
-        print (loss)
+        total_loss += loss.item()
         # print('out: ', out.shape)
         # print('labels: ', batch_labels.shape)
         #correct += pred.eq(batch_labels).sum().item()
@@ -169,7 +172,7 @@ def test(model: torch.nn.Module, loader, device, num_classes):
     pr_recall = precision_recall(preds= torch.tensor(pred_all), target= torch.tensor(labels_all), average='macro', mdmc_average=None, ignore_index=None,
                                  num_classes=num_classes, threshold=0.5, top_k=None, multiclass=None)
 
-    return correct / num_graphs, loss / num_graphs, pr_recall, confusion
+    return correct / num_graphs, loss / num_graphs, pr_recall, confusion, (total_loss * 1.) / num_batches
 
 
 def main(args):
@@ -229,9 +232,11 @@ def main(args):
     for e in range(args.epochs):
         s_time = time()
         train_loss = train(model, optimizer, train_loader, device)
+        print ("train loss", train_loss)
         train_times.append(time() - s_time)
         #val_acc, val_loss, pr_recall_val, val_conf = test(model, val_loader, device, num_classes)
-        test_acc, _, pr_recall_test, test_conf = test(model, test_loader, device, num_classes)
+        test_acc, _, pr_recall_test, test_conf, test_loss = test(model, test_loader, device, num_classes, e)
+        print ("test loss", test_loss)
 
         # if best_val_loss > val_loss:
         #     best_val_loss = val_loss
