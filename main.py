@@ -217,7 +217,7 @@ def main(args):
         s_time = time()
         train_loss = train(model, optimizer, train_loader, device)
         train_times.append(time() - s_time)
-        #val_acc, val_loss, pr_recall_val, val_conf = test(model, val_loader, device, num_classes)
+        val_acc, val_loss, pr_recall_val, val_conf = test(model, val_loader, device, num_classes)
         test_acc, _, pr_recall_test, test_conf = test(model, test_loader, device, num_classes)
 
         if best_val_loss > val_loss:
