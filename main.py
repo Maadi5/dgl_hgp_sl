@@ -133,7 +133,7 @@ def test(model: torch.nn.Module, loader, device, num_classes):
         batch_labels = batch_labels.long().to(device)
         #out = model(batch_graphs, n_feat = batch_graphs.ndata["feat"], e_feat = None)   #change for dgl
         out = model(batch_graphs, n_feat=batch_graphs.ndata["features"])
-        print ("outputs", out)
+        print ("outputs", torch.sigmoid(out))
         pred = out.argmax(dim=1)
         labels_all.extend(batch_labels.cpu().numpy())
         pred_all.extend(pred.cpu().numpy())
