@@ -402,7 +402,7 @@ class OdourDataset_test(DGLDataset):
                 mol = molecule_from_smiles(row['IsomericSMILES'])
                 print(list(row))
                 print(len(list(row)))
-                label = [int(i) for i in list(row)[3:-2]]
+                label = [int(i) for i in list(row)[3:-3]]
                 atom_features, bond_features, pair_indices, num_nodes = graph_from_molecule(mol, global_node=True)
                 g = create_dgl_graph(pair_indices, num_nodes=num_nodes)
                 g.ndata['features'] = torch.from_numpy(np.array(atom_features, dtype=np.float32))
