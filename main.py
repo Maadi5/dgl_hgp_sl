@@ -168,11 +168,12 @@ def test(model: torch.nn.Module, loader, device, num_classes, e):
         # print('out: ', out.shape)
         # print('labels: ', batch_labels.shape)
         #correct += pred.eq(batch_labels).sum().item()
-    confusion = confusion_matrix(labels_all, pred_all)
-    pr_recall = precision_recall(preds= torch.tensor(pred_all), target= torch.tensor(labels_all), average='macro', mdmc_average=None, ignore_index=None,
-                                 num_classes=num_classes, threshold=0.5, top_k=None, multiclass=None)
+    #confusion = confusion_matrix(labels_all, pred_all)
+    #pr_recall = precision_recall(preds= torch.tensor(pred_all), target= torch.tensor(labels_all), average='macro', mdmc_average=None, ignore_index=None,
+    #                             num_classes=num_classes, threshold=0.5, top_k=None, multiclass=None)
 
-    return correct / num_graphs, loss / num_graphs, pr_recall, confusion, (total_loss * 1.) / num_batches
+    #return correct / num_graphs, loss / num_graphs, pr_recall, confusion, (total_loss * 1.) / num_batches
+    return correct / num_graphs, loss / num_graphs, (total_loss * 1.) / num_batches
 
 
 def main(args):
