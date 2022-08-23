@@ -141,13 +141,13 @@ def test(model: torch.nn.Module, loader, device, num_classes):
         label_list = []
         for b in batch_labels:
             l_list = []
-            idd = np.where(b == 1)[0]
+            idd = np.where(b.cpu().numpy() == 1)[0]
             for bb in idd:
                 l_list.append(bb)
             label_list.append(l_list)
         for each_t in sig_out:
             p_list = []
-            for e in each_t.argsort():
+            for e in each_t.cpu().numpy().argsort():
                 if each_t[e] > 0.1:
                     p_list.append(id2label[e])
             pred_list.append(p_list)
