@@ -128,8 +128,6 @@ def test(model: torch.nn.Module, loader, device, num_classes):
     criterion = torch.nn.BCEWithLogitsLoss()
     for batch in loader:
         batch_graphs, batch_labels = batch
-        print ("WTF AF", batch_labels.shape)
-        continue
         num_graphs += batch_labels.size(0)
         batch_graphs = batch_graphs.to(device)
         batch_labels = batch_labels.long().to(device)
@@ -182,10 +180,6 @@ def main(args):
     val_loader = GraphDataLoader(val_set, batch_size=args.batch_size, num_workers=2)
     print ("maadi",test_set)
     test_loader = GraphDataLoader(test_set, batch_size=args.batch_size, shuffle=True, num_workers=2)
-    for shite in test_loader:
-        a,b = shite
-        print ("shit me pls", b.shape)
-
     # for shite in train_loader:
     #     print ("shit me pls train", shite[1].shape)
     #
@@ -217,27 +211,27 @@ def main(args):
         s_time = time()
         train_loss = train(model, optimizer, train_loader, device)
         train_times.append(time() - s_time)
-        val_acc, val_loss, pr_recall_val, val_conf = test(model, val_loader, device, num_classes)
+        #val_acc, val_loss, pr_recall_val, val_conf = test(model, val_loader, device, num_classes)
         test_acc, _, pr_recall_test, test_conf = test(model, test_loader, device, num_classes)
 
-        if best_val_loss > val_loss:
-            best_val_loss = val_loss
-            final_test_acc = test_acc
-            bad_cound = 0
-            best_epoch = e + 1
-        else:
-            bad_cound += 1
-        if bad_cound >= args.patience:
-            break
+        # if best_val_loss > val_loss:
+        #     best_val_loss = val_loss
+        #     final_test_acc = test_acc
+        #     bad_cound = 0
+        #     best_epoch = e + 1
+        # else:
+        #     bad_cound += 1
+        # if bad_cound >= args.patience:
+        #     break
 
         if (e) % args.print_every == 0:
 
             log_format = "Epoch {}: loss={:.4f}, val_acc={:.4f}, final_test_acc={:.4f}"
-            print(log_format.format(e + 1, train_loss, val_acc, final_test_acc))
-            print('Valid precision, recall: ', (pr_recall_val[0]).item(), (pr_recall_val[1]).item())
+        #    print(log_format.format(e + 1, train_loss, val_acc, final_test_acc))
+        #    print('Valid precision, recall: ', (pr_recall_val[0]).item(), (pr_recall_val[1]).item())
             print('Test precision, recall: ', (pr_recall_test[0]).item(), (pr_recall_test[1]).item())
             print('valid confusion: ')
-            print(val_conf)
+        #    print(val_conf)
             print('test confusion: ')
             print(test_conf)
             torch.save(model, str(Path(save_weights)/('odour0_weights_'+str(e)+'.pt')))
