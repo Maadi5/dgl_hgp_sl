@@ -236,7 +236,7 @@ def main(args):
         print ("train loss", train_loss)
         train_times.append(time() - s_time)
         #val_acc, val_loss, pr_recall_val, val_conf = test(model, val_loader, device, num_classes)
-        test_acc, _, pr_recall_test, test_conf, test_loss = test(model, test_loader, device, num_classes, e)
+        test_acc, _, test_loss = test(model, test_loader, device, num_classes, e)
         print ("test loss", test_loss)
 
         # if best_val_loss > val_loss:
