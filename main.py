@@ -178,7 +178,7 @@ def main(args):
     train_loader = GraphDataLoader(train_set, batch_size=args.batch_size, shuffle=True, num_workers=6)
     val_loader = GraphDataLoader(val_set, batch_size=args.batch_size, num_workers=2)
     print ("maadi",test_set)
-    test_loader = GraphDataLoader(test_set, batch_size=args.batch_size, num_workers=2)
+    test_loader = GraphDataLoader(test_set, batch_size=args.batch_size, shuffle=True, num_workers=2)
 
     device = torch.device(args.device)
 
