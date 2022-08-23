@@ -188,7 +188,7 @@ def main(args):
     # for shite in train_loader:
     #     print ("shit me pls train", shite[1].shape)
     #
-    # device = torch.device(args.device)
+    device = torch.device(args.device)
 
     # Step 2: Create model =================================================================== #
     #num_n_feature, num_classes, _ = dataset.statistics() #get edge classes in dgl dataset
