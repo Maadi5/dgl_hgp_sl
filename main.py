@@ -182,10 +182,9 @@ def main(args):
     test_loader = GraphDataLoader(test_set, batch_size=args.batch_size, shuffle=True, num_workers=2)
     for shite in test_loader:
         print ("shit me pls", shite[1].shape)
-        break
+
     for shite in train_loader:
         print ("shit me pls train", shite[1].shape)
-        break
 
     device = torch.device(args.device)
 
