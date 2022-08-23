@@ -289,7 +289,7 @@ class OdourDataset_train(DGLDataset):
                 #print(list(row))
                 print ("train shiz")
                 print(list(row))
-                print(len(list(row)))
+                print(len(list(row)[3:-3]))
                 label = [int(i) for i in list(row)[3:-3]]
                 atom_features, bond_features, pair_indices, num_nodes = graph_from_molecule(mol, global_node=True)
                 g = create_dgl_graph(pair_indices, num_nodes=num_nodes)
@@ -404,7 +404,7 @@ class OdourDataset_test(DGLDataset):
             if row['IsomericSMILES'] != '':
                 mol = molecule_from_smiles(row['IsomericSMILES'])
                 print(list(row))
-                print(len(list(row)))
+                print(len(list(row)[3:-2]))
                 label = [int(i) for i in list(row)[3:-2]]
                 atom_features, bond_features, pair_indices, num_nodes = graph_from_molecule(mol, global_node=True)
                 g = create_dgl_graph(pair_indices, num_nodes=num_nodes)
