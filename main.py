@@ -183,7 +183,8 @@ def main(args):
     print ("maadi",test_set)
     test_loader = GraphDataLoader(test_set, batch_size=args.batch_size, shuffle=True, num_workers=2)
     for shite in test_loader:
-        print ("shit me pls", shite[1].shape)
+        a,b = shite
+        print ("shit me pls", b.shape)
 
     # for shite in train_loader:
     #     print ("shit me pls train", shite[1].shape)
