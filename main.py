@@ -159,6 +159,7 @@ def main(args):
     train_set = OdourDataset_train()
     val_set = OdourDataset_val()
     test_set = OdourDataset_test()
+    print(test_set.labels.shape)
 
     # add self loop. We add self loop for each graph here since the function "add_self_loop" does not
     # support batch graph.
