@@ -119,6 +119,8 @@ def train(model: torch.nn.Module, optimizer, trainloader, device):
 
 @torch.no_grad()
 def test(model: torch.nn.Module, loader, device, num_classes):
+    savepath = '/content/drive/MyDrive/dgl_hgp_sl/dataset/'
+    id2label = json.load(open(os.path.join(savepath,"id2label_leff.json")))
     model.eval()
     labels_all = []
     pred_all = []
@@ -133,7 +135,25 @@ def test(model: torch.nn.Module, loader, device, num_classes):
         batch_labels = batch_labels.long().to(device)
         #out = model(batch_graphs, n_feat = batch_graphs.ndata["feat"], e_feat = None)   #change for dgl
         out = model(batch_graphs, n_feat=batch_graphs.ndata["features"])
-        print ("outputs", torch.sigmoid(out))
+        sig_out = torch.sigmoid(out)
+        print ("outputs", sig_out)
+        pred_list = []
+        label_list = []
+        for b in batch_labels:
+            l_list = []
+            idd = np.where(b == 1)[0]
+            for bb in idd:
+                l_list.append(bb)
+            label_list.append(l_list)
+        for each_t in sig_out:
+            p_list = []
+            for e in each_t.argsort():
+                if each_t[e] > 0.1:
+                    p_list.append(id2label[e])
+            pred_list.append(p_list)
+        for iss in range(len(pred_list)):
+            print (label_list[iss], pred_list[iss])
+
         pred = out.argmax(dim=1)
         labels_all.extend(batch_labels.cpu().numpy())
         pred_all.extend(pred.cpu().numpy())
