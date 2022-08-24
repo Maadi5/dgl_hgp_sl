@@ -131,6 +131,7 @@ def test(model: torch.nn.Module, loader, device, num_classes, e):
     total_loss = 0
     num_batches = len(loader)
     criterion = torch.nn.BCEWithLogitsLoss()
+    hi_da = 0
     for batch in loader:
         batch_graphs, batch_labels = batch
         num_graphs += batch_labels.size(0)
@@ -139,7 +140,8 @@ def test(model: torch.nn.Module, loader, device, num_classes, e):
         #out = model(batch_graphs, n_feat = batch_graphs.ndata["feat"], e_feat = None)   #change for dgl
         out = model(batch_graphs, n_feat=batch_graphs.ndata["features"])
         sig_out = torch.sigmoid(out)
-        if e % 2 == 0:
+        if e % 2 == 0 and hi_da == 0:
+            hi_da = 1
             print ("outputs", sig_out)
             pred_list = []
             label_list = []
