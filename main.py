@@ -120,7 +120,7 @@ def train(model: torch.nn.Module, optimizer, trainloader, device):
 @torch.no_grad()
 def test(model: torch.nn.Module, loader, device, num_classes, e):
     savepath = '/content/drive/MyDrive/dgl_hgp_sl/dataset/'
-    id2label = json.load(open(os.path.join(savepath,"id2label_leff.json")))
+    id2label = json.load(open(os.path.join(savepath,"id2label_leff_8.json")))
     print (id2label)
     model.eval()
     labels_all = []
