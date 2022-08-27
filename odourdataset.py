@@ -405,7 +405,7 @@ class OdourDataset_test(DGLDataset):
         for idx, row in df.iterrows():
             if row['IsomericSMILES'] != '':
                 mol = molecule_from_smiles(row['IsomericSMILES'])
-                #print(list(row))
+                print(list(row))
                 #print(len(list(row)[3:-2]))
                 label = [int(i) for i in list(row)[3:]]
                 atom_features, bond_features, pair_indices, num_nodes = graph_from_molecule(mol, global_node=True)
