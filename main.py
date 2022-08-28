@@ -234,6 +234,7 @@ def main(args):
 
     for e in range(args.epochs):
         s_time = time()
+        print('EPOCH: ', str(e))
         train_loss = train(model, optimizer, train_loader, device)
         print ("train loss", train_loss)
         train_times.append(time() - s_time)
