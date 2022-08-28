@@ -162,7 +162,7 @@ def test(model: torch.nn.Module, loader, device, num_classes, e):
                 pred_list.append(p_list)
                 vallist.append(p_vals)
             for iss in range(len(pred_list)):
-                print (label_list[iss], pred_list[iss], vallist)
+                print (label_list[iss], pred_list[iss], vallist[iss])
 
         pred = out.argmax(dim=1)
         labels_all.extend(batch_labels.cpu().numpy())
