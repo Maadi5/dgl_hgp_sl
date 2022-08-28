@@ -259,7 +259,8 @@ class OdourDataset_train(DGLDataset):
         # self.mode = mode
         self.atom_featurizer = AtomFeaturizer(
             allowable_sets={
-                "symbol": {"B", "Br", "C", "Ca", "Cl", "F", "H", "I", "N", "Na", "O", "P", "S"},
+                #"symbol": {"B", "Br", "C", "Ca", "Cl", "F", "H", "I", "N", "Na", "O", "P", "S"},
+                "symbol": {"C", "N", "O", "S"},
                 "n_valence": {0, 1, 2, 3, 4, 5, 6},
                 "n_hydrogens": {0, 1, 2, 3, 4},
                 "hybridization": {"s", "sp", "sp2", "sp3"},
@@ -324,7 +325,8 @@ class OdourDataset_val(DGLDataset):
         # self.mode = mode
         self.atom_featurizer = AtomFeaturizer(
             allowable_sets={
-                "symbol": {"B", "Br", "C", "Ca", "Cl", "F", "H", "I", "N", "Na", "O", "P", "S"},
+                #"symbol": {"B", "Br", "C", "Ca", "Cl", "F", "H", "I", "N", "Na", "O", "P", "S"},
+                "symbol": {"C", "N", "O", "S"},
                 "n_valence": {0, 1, 2, 3, 4, 5, 6},
                 "n_hydrogens": {0, 1, 2, 3, 4},
                 "hybridization": {"s", "sp", "sp2", "sp3"},
@@ -381,7 +383,8 @@ class OdourDataset_test(DGLDataset):
         # self.mode = mode
         self.atom_featurizer = AtomFeaturizer(
             allowable_sets={
-                "symbol": {"B", "Br", "C", "Ca", "Cl", "F", "H", "I", "N", "Na", "O", "P", "S"},
+                #"symbol": {"B", "Br", "C", "Ca", "Cl", "F", "H", "I", "N", "Na", "O", "P", "S"},
+                "symbol": {"C", "N", "O", "S"},
                 "n_valence": {0, 1, 2, 3, 4, 5, 6},
                 "n_hydrogens": {0, 1, 2, 3, 4},
                 "hybridization": {"s", "sp", "sp2", "sp3"},
