@@ -21,6 +21,20 @@ import torch.nn as nn
 import torch.nn.functional as F
 from dgl.nn.pytorch import GraphConv
 
+import requests
+
+
+CACTUS = "https://cactus.nci.nih.gov/chemical/structure/{0}/{1}"
+
+
+def smiles_to_iupac(smiles):
+    rep = "iupac_name"
+    url = CACTUS.format(smiles, rep)
+    response = requests.get(url)
+    response.raise_for_status()
+    return response.text
+
+
 
 def smiles2graph(smiles_string):
     """
@@ -465,6 +479,8 @@ class OdourDataset_eval(DGLDataset):
         df = pd.read_csv(os.path.join(savepath, ('leff_test_8' + '.csv')))
         self.graphs = []
         self.labels = []
+        self.chemicals = []
+        self.iupac = []
         self.labels_set = []
         for idx, row in df.iterrows():
             if row['IsomericSMILES'] != '':
@@ -472,6 +488,7 @@ class OdourDataset_eval(DGLDataset):
                 # print(list(row))
                 #print(len(list(row)[3:-2]))
                 label = [int(i) for i in list(row)[4:]]
+                chem_name = row['IsomericSMILES']
                 atom_features, bond_features, pair_indices, num_nodes = graph_from_molecule(mol, global_node=True)
                 g = create_dgl_graph(pair_indices, num_nodes=num_nodes)
                 g.ndata['features'] = torch.from_numpy(np.array(atom_features, dtype=np.float32))
@@ -482,12 +499,14 @@ class OdourDataset_eval(DGLDataset):
                 self.num_bond_feat = bond_features.shape[1]
                 self.graphs.append(g)
                 self.labels.append(label)
+                self.chemicals.append(chem_name)
+                self.iupac.append(smiles_to_iupac(chem_name))
                 self.labels_set.append(label)
         self.labels = torch.LongTensor(self.labels)
         print ("Batch labels in process",self.labels.shape)
 
     def __getitem__(self, i):
-        return self.graphs[i], self.labels[i]
+        return self.graphs[i], self.labels[i], self.chemicals, self.iupac
 
     def __len__(self):
         return len(self.graphs)
