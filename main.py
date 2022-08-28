@@ -153,12 +153,14 @@ def test(model: torch.nn.Module, loader, device, num_classes, e):
                 label_list.append(l_list)
             for each_t in sig_out:
                 p_list = []
+                p_vals = []
                 for e in each_t.cpu().numpy().argsort():
-                    if each_t[e] > 0.1:
+                    if each_t[e] > 0.3:
                         p_list.append(id2label[str(e)])
+                        p_vals.append(each_t[e])
                 pred_list.append(p_list)
             for iss in range(len(pred_list)):
-                print (label_list[iss], pred_list[iss])
+                print (label_list[iss], pred_list[iss], p_vals)
 
         pred = out.argmax(dim=1)
         labels_all.extend(batch_labels.cpu().numpy())
