@@ -22,7 +22,7 @@ import numpy as np
 import warnings
 warnings.filterwarnings('ignore')
 
-save_weights = '/content/drive/MyDrive/dgl_hgp_sl/weights'
+save_weights = '/content/drive/MyDrive/dgl_hgp_sl/weights_2'
 
 if not os.path.exists(save_weights):
     os.makedirs(save_weights)
