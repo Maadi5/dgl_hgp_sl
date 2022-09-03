@@ -5,7 +5,7 @@ import os
 from time import time
 #from odourdataset import OdourDataset_train, OdourDataset_val, OdourDataset_test
 from odourdataset import OdourDataset_train, OdourDataset_val, OdourDataset_test
-from odourdataset2 import OdourDataset2
+#from odourdataset2 import OdourDataset2
 import dgl
 import torch
 import torch.nn
