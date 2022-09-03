@@ -123,9 +123,9 @@ def train(model: torch.nn.Module, optimizer, trainloader, device):
 
 
 @torch.no_grad()
-def test(model: torch.nn.Module, loader, device, num_classes, e):
+def test(model: torch.nn.Module, loader, device, num_classes, e, id2label):
     savepath = '/content/drive/MyDrive/dgl_hgp_sl/dataset/'
-    id2label = json.load(open(os.path.join(savepath,"id2label_leff_8.json")))
+    #id2label = json.load(open(os.path.join(savepath,"id2label_leff_8.json")))
     #print (id2label)
     model.eval()
     labels_all = []
@@ -194,7 +194,7 @@ def main(args):
     # val_set = OdourDataset_val()
     # test_set = OdourDataset_test()
     # print(test_set.labels.shape)
-    train_all, test_all = split_by_batches(dataset_name= dataset_name, input_path= input_path)
+    train_all, test_all, label2id, id2label = split_by_batches(dataset_name= dataset_name, input_path= input_path)
 
     for p in range(len(train_all)):
         print('ITERATION: ', p)
@@ -254,7 +254,7 @@ def main(args):
             print ("train loss", train_loss)
             train_times.append(time() - s_time)
             #val_acc, val_loss, pr_recall_val, val_conf = test(model, val_loader, device, num_classes)
-            test_acc, _, test_loss = test(model, test_loader, device, num_classes, e)
+            test_acc, _, test_loss = test(model, test_loader, device, num_classes, e, id2label)
             print ("test loss", test_loss)
 
             # if best_val_loss > val_loss:

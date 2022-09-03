@@ -11,6 +11,11 @@ def split_by_batches(dataset_name, input_path, num_splits= 2, split = (.8,.2)):
     inputdataset = os.path.join(input_path, (dataset_name + '.csv'))
 
     datasetdf = pd.read_csv(inputdataset)
+
+    columns = list(datasetdf.columns)[:-1]
+    label2id = {v:k for k,v in enumerate(columns)}
+    id2label = {label2id[v]: v for v in columns}
+
     output_dataset = os.path.join(pat, 'stratified')
     if not os.path.exists(output_dataset):
         os.makedirs(output_dataset)
@@ -30,4 +35,4 @@ def split_by_batches(dataset_name, input_path, num_splits= 2, split = (.8,.2)):
         testitr.to_csv(os.path.join(pat, (dataset_name + '_test_' + str(count) + '.csv')))
         test_all.append(os.path.join(pat, (dataset_name + '_test_' + str(count) + '.csv')))
         count += 1
-    return train_all, test_all
+    return train_all, test_all, label2id, id2label
