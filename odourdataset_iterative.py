@@ -332,42 +332,7 @@ class OdourDataset_train(DGLDataset):
         # return 9, 0,len(self.labels_set), len(self.graphs)
         return self.num_atom_feat, self.num_bond_feat, len(self.labels_set[0]), len(self.graphs)
 
-class OdourDataset_val(DGLDataset):
-    def __init__(self):
-        super(OdourDataset_val, self).__init__(name='odour_dataset')
-    def process(self):
-        savepath = '/content/drive/MyDrive/dgl_hgp_sl/dataset/'
-        df = pd.read_csv(os.path.join(savepath, ('odour_graphs_leff_' + str('valid') + '.csv')))
-        self.graphs = []
-        self.labels = []
-        self.labels_set = []
-        for idx, row in df.iterrows():
-            if row['IsomericSMILES'] != '':
 
-                mol = molecule_from_smiles(row['IsomericSMILES'])
-                label = [int(i) for i in list(row)[3:-3]]
-                atom_features, bond_features, pair_indices, num_nodes = graph_from_molecule(mol, global_node=True)
-                g = create_dgl_graph(pair_indices, num_nodes=num_nodes)
-                g.ndata['features'] = torch.from_numpy(np.array(atom_features, dtype=np.float32))
-                g.edata['features'] = torch.from_numpy(np.array(bond_features, dtype=np.float32))
-                # g = smiles2graph(row['SMILES'])
-                # g.ndata['features'] = torch.tensor(feat_vec(row['SMILES']))
-                self.num_atom_feat = atom_features.shape[1]
-                self.num_bond_feat = bond_features.shape[1]
-                self.graphs.append(g)
-                self.labels.append(label)
-                self.labels_set.append(label)
-        self.labels = torch.LongTensor(self.labels)
-
-    def __getitem__(self, i):
-        return self.graphs[i], self.labels[i]
-
-    def __len__(self):
-        return len(self.graphs)
-
-    def statistics(self):
-        # return 9, 0,len(self.labels_set), len(self.graphs)
-        return self.num_atom_feat, self.num_bond_feat, len(self.labels_set[0]), len(self.graphs)
 
 class OdourDataset_test(DGLDataset):
     def __init__(self):
@@ -493,7 +458,7 @@ class OdourDataset(Dataset):
         print ("Batch labels in process",self.labels.shape)
 
     def __getitem__(self, i):
-        return self.graphs[i], self.labels[i], self.chemicals, self.iupac
+        return self.graphs[i], self.labels[i] #, self.chemicals, self.iupac
 
     def __len__(self):
         return len(self.graphs)
