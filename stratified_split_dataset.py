@@ -10,7 +10,7 @@ dataset_name = 'sharma_logs_shrunk_w_odourless'
 def split_by_batches(dataset_name, input_path, num_splits= 2, split = (.8,.2)):
     inputdataset = os.path.join(input_path, (dataset_name + '.csv'))
 
-    datasetdf = pd.read_csv(inputdataset)
+    datasetdf = pd.read_csv(inputdataset, index_col= False)
 
     columns = list(datasetdf.columns)[:-1]
     label2id = {v:k for k,v in enumerate(columns)}
