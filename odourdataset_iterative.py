@@ -425,8 +425,9 @@ from torch.utils.data import Dataset, DataLoader
 
 class OdourDataset(Dataset):
     def __init__(self, datasetpath):
-        self.datasetpath = datasetpath
         super(OdourDataset, self).__init__()
+        self.datasetpath = datasetpath
+        self.process()
 
 
     def process(self):
