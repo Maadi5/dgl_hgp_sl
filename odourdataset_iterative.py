@@ -452,8 +452,8 @@ class OdourDataset(Dataset):
                 self.num_bond_feat = bond_features.shape[1]
                 self.graphs.append(g)
                 self.labels.append(label)
-                self.chemicals.append(chem_name)
-                self.iupac.append(smiles_to_iupac(chem_name))
+                #self.chemicals.append(chem_name)
+                #self.iupac.append(smiles_to_iupac(chem_name))
                 self.labels_set.append(label)
         self.labels = torch.LongTensor(self.labels)
         print ("Batch labels in process",self.labels.shape)
