@@ -195,7 +195,7 @@ def main(args):
     # test_set = OdourDataset_test()
     # print(test_set.labels.shape)
     train_all, test_all, label2id, id2label = split_by_batches(dataset_name= dataset_name, input_path= input_path)
-
+    print(id2label)
     for p in range(len(train_all)):
         print('ITERATION: ', p)
         train_set = OdourDataset(datasetpath= train_all[p])
