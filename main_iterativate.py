@@ -5,7 +5,7 @@ import os
 from time import time
 #from odourdataset import OdourDataset_train, OdourDataset_val, OdourDataset_test
 from stratified_split_dataset import split_by_batches
-from odourdataset import OdourDataset_train, OdourDataset_val, OdourDataset_test
+#from odourdataset import OdourDataset_train, OdourDataset_val, OdourDataset_test
 from odourdataset_iterative import OdourDataset
 #from odourdataset2 import OdourDataset2
 import dgl

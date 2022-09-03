@@ -26,7 +26,7 @@ import requests
 
 CACTUS = "https://cactus.nci.nih.gov/chemical/structure/{0}/{1}"
 
-sharma_logs_dataset = pd.read_csv(r'/content/drive/MyDrive/dgl_hgp_sl/dataset/sharma_logs_dataset.csv')
+#sharma_logs_dataset = pd.read_csv(r'/content/drive/MyDrive/dgl_hgp_sl/dataset/sharma_logs_dataset.csv')
 
 def smiles_to_iupac(smiles):
     rep = "iupac_name"
