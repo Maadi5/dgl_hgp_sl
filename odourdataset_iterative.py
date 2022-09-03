@@ -133,12 +133,13 @@ class BondFeaturizer(Featurizer):
 
 atom_featurizer = AtomFeaturizer(
     allowable_sets={
-        "symbol": {'Br', 'C', 'Cl', 'F', 'I', 'N', 'Na', 'O', 'P', 'S', 'Zn'},
+        "symbol": {'Y', 'Te', 'Hg', 'In', 'K', 'Cs', 'Ti', 'P', 'V', 'Tl', 'Zn', 'Cr', 'Be', 'O', 'Ne', 'Ce', 'Ba', 'S', 'Br', 'Cu', 'Si', 'Sr', 'Co', 'Li', 'Au', 'Mn', 'Rn', 'C', 'Bi', 'Al', 'Mg', 'Sb', 'Sn', 'I', 'Na', 'Ni', 'Se', 'Fe', 'Ca', 'H', 'Zr', 'Ar', 'Gd', 'Pt', 'Cl', 'Mo', 'He', 'Ta', 'N', 'Cd', 'Pb', 'As', 'B', 'F', 'Ag'}, #{'Br', 'C', 'Cl', 'F', 'I', 'N', 'Na', 'O', 'P', 'S', 'Zn'},
         "n_valence": {0, 1, 2, 3, 4, 5, 6},
         "n_hydrogens": {0, 1, 2, 3, 4},
         "hybridization": {"s", "sp", "sp2", "sp3"},
     }
 )
+
 
 bond_featurizer = BondFeaturizer(
     allowable_sets={
@@ -472,16 +473,16 @@ from torch.utils.data import Dataset, DataLoader
 
 
 
-def get_data_per_batch_id(train_all, test_all, batch_id):
-    train_index = train_all[batch_id-1]
-    test_index = test_all[batch_id-1]
-    train_df = sharma_logs_dataset.iloc[train_index]
-    #y_train = np.array(sharma_logs_dataset.masks[train_index].map(upsample).tolist()).reshape(-1, img_size_target, img_size_target, 1)
-    test_df = sharma_logs_dataset.iloc[test_index]
-    #y_valid = np.array(sharma_logs_dataset.masks[evaluate_index].map(upsample).tolist()).reshape(-1, img_size_target, img_size_target, 1)
-    graphs_train, labels_train = get_data_from_df(train_df)
-    graphs_test, labels_test = get_data_from_df(test_df)
-    return graphs_test, labels_train, graphs_test, labels_test
+# def get_data_per_batch_id(train_all, test_all, batch_id):
+#     train_index = train_all[batch_id-1]
+#     test_index = test_all[batch_id-1]
+#     train_df = sharma_logs_dataset.iloc[train_index]
+#     #y_train = np.array(sharma_logs_dataset.masks[train_index].map(upsample).tolist()).reshape(-1, img_size_target, img_size_target, 1)
+#     test_df = sharma_logs_dataset.iloc[test_index]
+#     #y_valid = np.array(sharma_logs_dataset.masks[evaluate_index].map(upsample).tolist()).reshape(-1, img_size_target, img_size_target, 1)
+#     graphs_train, labels_train = get_data_from_df(train_df)
+#     graphs_test, labels_test = get_data_from_df(test_df)
+#     return graphs_test, labels_train, graphs_test, labels_test
 
 # def statistics(set= 'train'):
 #     # return 9, 0,len(self.labels_set), len(self.graphs)
@@ -489,27 +490,27 @@ def get_data_per_batch_id(train_all, test_all, batch_id):
 #
 #     return self.num_atom_feat, self.num_bond_feat,len(self.labels_set[0]), len(self.graphs)
 
-def get_data_from_df(df):
-    graphs = []
-    labels = []
-    labels_set = []
-    for idx, row in df.iterrows():
-        if idx>= sharma_logs_dataset.shape[0]-1:
-            break
-        if row['smiles'] != '':
-            mol = molecule_from_smiles(row['smiles'])
-            label = [int(i) for i in list(row)[:-1]]
-            atom_features, bond_features, pair_indices, num_nodes = graph_from_molecule(mol, global_node=True)
-            g = create_dgl_graph(pair_indices, num_nodes=num_nodes)
-            g.ndata['features'] = torch.from_numpy(np.array(atom_features, dtype=np.float32))
-            g.edata['features'] = torch.from_numpy(np.array(bond_features, dtype=np.float32))
-            num_atom_feat = atom_features.shape[1]
-            num_bond_feat = bond_features.shape[1]
-            graphs.append(g)
-            labels.append(label)
-            labels_set.append(label)
-    labels = torch.LongTensor(labels)
-    return graphs, labels
+# def get_data_from_df(df):
+#     graphs = []
+#     labels = []
+#     labels_set = []
+#     for idx, row in df.iterrows():
+#         if idx>= sharma_logs_dataset.shape[0]-1:
+#             break
+#         if row['smiles'] != '':
+#             mol = molecule_from_smiles(row['smiles'])
+#             label = [int(i) for i in list(row)[:-1]]
+#             atom_features, bond_features, pair_indices, num_nodes = graph_from_molecule(mol, global_node=True)
+#             g = create_dgl_graph(pair_indices, num_nodes=num_nodes)
+#             g.ndata['features'] = torch.from_numpy(np.array(atom_features, dtype=np.float32))
+#             g.edata['features'] = torch.from_numpy(np.array(bond_features, dtype=np.float32))
+#             num_atom_feat = atom_features.shape[1]
+#             num_bond_feat = bond_features.shape[1]
+#             graphs.append(g)
+#             labels.append(label)
+#             labels_set.append(label)
+#     labels = torch.LongTensor(labels)
+#     return graphs, labels
 
 if __name__ == "__main__":
     pass
