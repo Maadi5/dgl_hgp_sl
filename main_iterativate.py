@@ -161,7 +161,7 @@ def test(model: torch.nn.Module, loader, device, num_classes, e, id2label):
                 p_list = []
                 p_vals = []
                 for e in each_t.cpu().numpy().argsort():
-                    if each_t[e] > 0.3:
+                    if each_t[e] > 0.1:
                         p_list.append(id2label[(e)])
                         p_vals.append(each_t[e])
                 pred_list.append(p_list)
