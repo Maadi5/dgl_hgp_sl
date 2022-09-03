@@ -155,14 +155,14 @@ def test(model: torch.nn.Module, loader, device, num_classes, e, id2label):
                 l_list = []
                 idd = np.where(b.cpu().numpy() == 1)[0]
                 for bb in idd:
-                    l_list.append(id2label[str(bb)])
+                    l_list.append(id2label[(bb)])
                 label_list.append(l_list)
             for each_t in sig_out:
                 p_list = []
                 p_vals = []
                 for e in each_t.cpu().numpy().argsort():
                     if each_t[e] > 0.3:
-                        p_list.append(id2label[str(e)])
+                        p_list.append(id2label[(e)])
                         p_vals.append(each_t[e])
                 pred_list.append(p_list)
                 vallist.append(p_vals)
