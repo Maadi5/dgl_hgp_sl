@@ -13,6 +13,7 @@ def split_by_batches(dataset_name, input_path, num_splits= 2, split = (.8,.2)):
     datasetdf = pd.read_csv(inputdataset, index_col= False)
 
     columns = list(datasetdf.columns)[:-1]
+    print(columns)
     label2id = {v:k for k,v in enumerate(columns)}
     id2label = {label2id[v]: v for v in columns}
 
