@@ -257,15 +257,6 @@ def main(args):
             test_acc, _, test_loss = test(model, test_loader, device, num_classes, e, id2label)
             print ("test loss", test_loss)
 
-            # if best_val_loss > val_loss:
-            #     best_val_loss = val_loss
-            #     final_test_acc = test_acc
-            #     bad_cound = 0
-            #     best_epoch = e + 1
-            # else:
-            #     bad_cound += 1
-            # if bad_cound >= args.patience:
-            #     break
 
             if (e) % args.print_every == 0:
 
@@ -291,7 +282,6 @@ if __name__ == "__main__":
         acc, train_time = main(args)
         res.append(acc)
         train_times.append(train_time)
-    print(' odourdataset: ', OdourDataset_train)
     mean, err_bd = get_stats(res, conf_interval=False)
     print("mean acc: {:.4f}, error bound: {:.4f}".format(mean, err_bd))
 

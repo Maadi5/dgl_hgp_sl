@@ -2,8 +2,8 @@ import os
 import pandas as pd
 from skmultilearn.model_selection import IterativeStratification
 
-pat = '/content/drive/MyDrive/dgl_hgp_sl/dataset/'
-dataset_name = 'sharma_logs_shrunk_w_odourless'
+# pat = '/content/drive/MyDrive/dgl_hgp_sl/dataset/'
+# dataset_name = 'sharma_logs_shrunk_w_odourless'
 
 
 

@@ -57,7 +57,6 @@ class HGPSLModel(torch.nn.Module):
                                              sample=sample, sparse=sparse, sl=sl,
                                              lamb=lamb, pool=use_pool))
         self.convpool_layers = torch.nn.ModuleList(convpools)
-
         self.lin1 = torch.nn.Linear(hid_feat * 2, hid_feat)
         self.lin2 = torch.nn.Linear(hid_feat, hid_feat // 2)
         self.lin3 = torch.nn.Linear(hid_feat // 2, self.out_feat)

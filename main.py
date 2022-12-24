@@ -30,8 +30,8 @@ if not os.path.exists(save_weights):
 def parse_args():
     parser = argparse.ArgumentParser(description="HGP-SL-DGL")
     parser.add_argument("--dataset", type=str, default="DD",
-                        choices=["DD", "PROTEINS", "NCI1", "NCI109", "Mutagenicity", "ENZYMES"],
-                        help="DD/PROTEINS/NCI1/NCI109/Mutagenicity/ENZYMES")
+                        choices = ["DD", "PROTEINS", "NCI1", "NCI109", "Mutagenicity", "ENZYMES"],
+                        help = "DD/PROTEINS/NCI1/NCI109/Mutagenicity/ENZYMES")
     parser.add_argument("--batch_size", type=int, default=512,
                         help="batch size")
     parser.add_argument("--sample", type=str, default="true",
